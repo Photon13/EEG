@@ -1,12 +1,22 @@
 import json
 import random
 
+from Globals import Globals
+
+
+#class Globals: # Parameter für BlockDicts vom 19.07.2025
+#    N_BLOCKS = 72
+#    freqCombs = ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"] 
+#    conditions = ["left", "middle", "right", "both"]
+
+
+
 class BlockDict:
 
     @staticmethod
     def get_pathBlockDict(participantNr):
         # cwd = amplitudeModulation_programs\\V3.0
-        return f"\\data\\blockDict\\participant{participantNr}_blockDict" 
+        return f"\\data\\blockDict\\participant{participantNr}_blockDict.txt" 
 
 
     @staticmethod
@@ -44,21 +54,22 @@ class BlockDict:
 
     @staticmethod
     def save_blockDict_asJson( blockDict : dict, pathBlockDict : str ):
-        jsonObj = json.dump( blockDict )
         with open( pathBlockDict, "w" ) as f:
-            f.write( jsonObj )
+            json.dump( blockDict, f, indent = 4 )
+
 
     #######
 
     @staticmethod
     def get_pathNrSeqs( participantNr ):
         # cwd = amplitudeModulation_programs\\V3.0
-        return f"\\data\\nrSeqs\\participant{participantNr}_nrSeqs"
+        return f"data\\nrSeqs\\participant{participantNr}_nrSeqs.txt"
 
+
+
+# Muss erst neu generiert werden, wenn sich N_BLOCKS ändert:
+
+#participantNr = x
+#pathBlockDict = f"data\\blockDict\\participant{participantNr}_blockDict.txt" # cwd = BrainVision Recorder\\Version 3.0
 #blockDict = BlockDict.generiere_neuesBlockDict()
-#pathBlockDict = "\\data\\blockDict" # amplitudeModulation_programs\\V3.0
-#BlockDict.save_blockDict_asJson( blockDict, BlockDict.pathBlockDict )
-
-
-
-
+#BlockDict.save_blockDict_asJson( blockDict, pathBlockDict)

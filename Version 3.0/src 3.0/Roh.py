@@ -3,7 +3,7 @@ import mne
 class Roh:
 
     @staticmethod
-    def lade_fullRaw(pathVHDR : str) -> mne.Raw:
+    def lade_fullRaw(pathVHDR : str) -> mne.io.Raw:
         """ Loads Header BVR file. """
         raw = mne.io.read_raw_brainvision(      
             vhdr_fname = pathVHDR,

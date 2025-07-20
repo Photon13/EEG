@@ -1,0 +1,82 @@
+{
+    "block0": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "middle"
+    },
+    "block1": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block2": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block3": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block4": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block5": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block6": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block7": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block8": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block9": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block10": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block11": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block12": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block13": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block14": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "middle"
+    },
+    "block15": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    }
+}
