@@ -7,6 +7,9 @@ from Konvertierung import Konvertierung
 
 class Berechnungen:
 
+
+
+    @staticmethod
     def berechnePower_P_fABC( fABC : List[float], freqs : np.ndarray, psds_normiert : np.ndarray ):
     
         P_fABC : List[float] = [0.0, 0.0, 0.0]
@@ -15,19 +18,18 @@ class Berechnungen:
 
             for k in range( len(freqs) ):
                 if( fABC[i]-1 < freqs[k] < fABC[i]+1 ):
-                    closeFreqs_Indices.append(i)
+                    closeFreqs_Indices.append(k)
 
             sum : float = 0.0
             for cFI in closeFreqs_Indices:
                 sum += psds_normiert[cFI]
             mean = sum / len(closeFreqs_Indices)
-            P_fABC[i] = mean ! falsch
-        print(P_fABC)
-        return 
+            P_fABC[i] = mean #! falsch
+        return P_fABC
 
 
     @staticmethod
-    def bestimme_P_fLMR( freqComb : str, P_fABC : List[float] ):
+    def bestimme_P_fLMR( freqComb : str, P_fABC : np.ndarray ):
         return Konvertierung.get_P_fLMR( freqComb, P_fABC )
     
 
@@ -100,6 +102,7 @@ class Berechnungen:
         mittlere_psd_dB : float = 10*np.log10(mittlere_psd)
 
         return psds, psds_dB, freqs
+
     
 
 

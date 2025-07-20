@@ -4,7 +4,7 @@ from typing import List
 class Konvertierung:
 
     @staticmethod
-    def get_P_fLMR( freqComb : str, P_fABC : List[float] ):
+    def get_P_fLMR( freqComb : str, P_fABC : np.ndarray ):
 
         P_fA = P_fABC[0]
         P_fB = P_fABC[1]
@@ -20,7 +20,7 @@ class Konvertierung:
             "CAB" : [ P_fC, P_fA, P_fB ],
             "CBA" : [ P_fC, P_fB, P_fA ] 
         }
-        return P_fLMR_per_freqCond[ freqComb ]
+        return np.array( P_fLMR_per_freqCond[ freqComb ] )
     
 
     bool_targetPerCond : dict = {
@@ -35,3 +35,4 @@ class Konvertierung:
         "right"  : np.array( [1, 1, 0] ),
         "both"   : np.array( [0, 1, 0] )
     }
+

@@ -3,11 +3,12 @@ import numpy as np
 
 from RohBlock import RohBlock
 from Berechnungen import Berechnungen
+from HelpMethods import HelpMethods
 
 
 class Normierung:
 
-    NORMIERUNGS_DIVIDENT_PARTICIANT_0 = None
+    NORMIERUNGS_DIVIDENT_PARTICIANT_0 = 12.829149943758924
     NORMIERUNGS_DIVIDENT_PARTICIANT_1 = None
     NORMIERUNGS_DIVIDENT_PARTICIANT_2 = None
     NORMIERUNGS_DIVIDENT_PARTICIANT_3 = None
@@ -31,26 +32,22 @@ class Normierung:
         for blockNr in range(n_blocks):  # berechne Durchschnitt für Block                                                            
             rawBlock = RohBlock.erzeuge_gecroppteRaw_fuerBlock(rawFull, pathVMRK, blockLength, blockNr )
             psds, psds_dB, freqs = Berechnungen.get_psds( rawBlock, blockLength )
-            meanPSD = Normierung.berechneMean_Eintraege( psds_dB )
-            list_means += meanPSD
-
-        return Normierung.berechneMean_Eintraege( list_means )  #berechne Durchschnitt aller Blöcke
+            meanPSD = HelpMethods.berechneMean_Eintraege( psds_dB )
+            list_means.append(meanPSD)
+            
+            print(f"blockNr = {blockNr}")
+            print(f"list_means = {list_means}")
+            
+        return HelpMethods.berechneMean_Eintraege( list_means )  #berechne Durchschnitt aller Blöcke
 
 
     @staticmethod
     def normiere_psds_dB( psds_dB : np.ndarray, normierungsDivident : float ) -> np.ndarray:
         psds_dB_normiert : List[float] = []
         for e in psds_dB:
-            psds_normiert.append( e / normierungsDivident )  
-        psds_normiert = np.array( psds_normiert )
+            psds_dB_normiert.append( e / normierungsDivident )  
+        psds_dB_normiert = np.array( psds_dB_normiert )
         return psds_dB_normiert
 
 
-    @staticmethod
-    def berechneMean_Eintraege( arr : np.ndarray | List ):
-        sum = 0.0
-        for e in arr:
-            sum += e
-        mean = sum / float( len(arr) )
-        return mean
 
