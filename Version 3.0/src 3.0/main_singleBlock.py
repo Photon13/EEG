@@ -77,18 +77,6 @@ class Main_singleBlock:
         psds, psds_dB, freqs  = Berechnungen.get_psds( rawBlock, blockLength )
         psds_normiert         = Normierung.normiere_psds_dB( psds_dB, normierungsDivident )
 
-        P_fABC_normiert       = Berechnungen.berechnePower_P_fABC( [famA, famB, famC], freqs, psds_normiert )
-        P_fLMR_normiert       = Berechnungen.bestimme_P_fLMR( freqComb, P_fABC_normiert )
-        P_fTarget_normiert    = Berechnungen.bestimme_P_fTarget( P_fLMR_normiert, target )
-        P_fNonTarget_normiert = Berechnungen.bestimme_P_fNonTarget( P_fLMR_normiert, target )
-
-        print( "blockNr = "                               + COLORPURPLE + f"{blockNr}"               + COLOREND )
-        print( "target = "                                + COLORGREEN  + f"{target}"                + COLOREND )
-        print( f"P_fABC_normiert_BLOCK{blockNr} = "       + COLORCYAN   + f"{P_fABC_normiert}"       + COLOREND )
-        print( f"P_fLMR_normiert_BLOCK{blockNr} = "       + COLORCYAN   + f"{P_fLMR_normiert}"       + COLOREND )
-        print( f"P_fTarget_normiert_BLOCK{blockNr} = "    + COLORCYAN   + f"{P_fTarget_normiert}"    + COLOREND )
-        print( f"P_fNonTarget_normiert_BLOCK{blockNr} = " + COLORCYAN   + f"{P_fNonTarget_normiert}" + COLOREND )
-
         ##############################################################################################################################################
 
         # PLOT PSD FÜR BLOCK:
@@ -96,15 +84,19 @@ class Main_singleBlock:
         #Plots.plot_PSD(psds_dB, freqs)         #un_normiert, dB
         #Plots.plot_PSD(psds_normiert, freqs)   #normiert (psd < 1: unterdurchschnittlich, psd>1: durchschnittlich)
 
-        return psds_normiert, freqs, P_fABC_normiert, P_fLMR_normiert, P_fTarget_normiert, P_fNonTarget_normiert
+        return psds, psds_dB, psds_normiert, freqs, blockDict
 
 
-Main_singleBlock.main_singleBlock(0)
+#Main_singleBlock.main_singleBlock(14)
 
 
-#participant0 P target > P NonTarget : blocks 0-10, 13, 15
+#participant0:
+
+# P target > P NonTarget : blocks 0-10, 13, 15
 # P target < P NonTarget : block 11 (target "right"), block12 (target "right"), block14 (target "middle")
 
+# power line peak:
+# block0 ca. 6 Hz über und unter 50 Hz ?
 
 
 

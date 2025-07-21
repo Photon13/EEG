@@ -1,0 +1,18 @@
+#PSD_normiert
+#P(33Hz +/- border) VS mean( P(31Hz +/- border), P(35Hz +/- border) )
+
+
+# T.TESTS:
+    #border = 1.0
+        #mean(P_fY) = 1.801700351148486
+        #mean(P_fXZ) = 1.8053771168884432
+        #ShapiroResult(statistic=0.9760861531395398, pvalue=0.703467415772081)
+        #ShapiroResult(statistic=0.975675298797857, pvalue=0.6677961060418411)
+        #TtestResult(statistic=4.224079459452826, pvalue=0.0107090492068454, df=4.446892496432953)
+
+
+# MANN_WHITNEY_U:
+    #border = 0.1:
+        #mean(P_fY) = 1.7418441597108651
+        #mean(P_fXZ) = 1.7945455607582634
+        #MannwhitneyuResult(statistic=66.0, pvalue=0.31810542398777697)

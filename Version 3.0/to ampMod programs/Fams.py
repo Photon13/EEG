@@ -2,9 +2,9 @@ from typing import List
 
 class Fams:
 
-    FAM_A = 35.7
-    FAM_B = 40.1
-    FAM_C = 45.3
+    FAM_A = 35.9
+    FAM_B = 39.7
+    FAM_C = 43.1
 
     @staticmethod
     def get_fams_fromFreqComb( freqComb : str ) -> List[float]:

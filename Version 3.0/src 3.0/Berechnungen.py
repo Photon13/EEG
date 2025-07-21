@@ -7,18 +7,37 @@ from Konvertierung import Konvertierung
 
 class Berechnungen:
 
+    """
+        P_fABC_normiert       = Berechnungen.berechnePower_P_fABC( [famA, famB, famC], freqs, psds_normiert )
+        P_fLMR_normiert       = Berechnungen.bestimme_P_fLMR( freqComb, P_fABC_normiert )
+        P_fTarget_normiert    = Berechnungen.bestimme_P_fTarget( P_fLMR_normiert, target )
+        P_fNonTarget_normiert = Berechnungen.bestimme_P_fNonTarget( P_fLMR_normiert, target )
+
+        print( "blockNr = "                               + COLORPURPLE + f"{blockNr}"               + COLOREND )
+        print( "target = "                                + COLORGREEN  + f"{target}"                + COLOREND )
+        print( f"P_fABC_normiert_BLOCK{blockNr} = "       + COLORCYAN   + f"{P_fABC_normiert}"       + COLOREND )
+        print( f"P_fLMR_normiert_BLOCK{blockNr} = "       + COLORCYAN   + f"{P_fLMR_normiert}"       + COLOREND )
+        print( f"P_fTarget_normiert_BLOCK{blockNr} = "    + COLORCYAN   + f"{P_fTarget_normiert}"    + COLOREND )
+        print( f"P_fNonTarget_normiert_BLOCK{blockNr} = " + COLORCYAN   + f"{P_fNonTarget_normiert}" + COLOREND )
+    
+    """
+
 
 
     @staticmethod
-    def berechnePower_P_fABC( fABC : List[float], freqs : np.ndarray, psds_normiert : np.ndarray ):
+    def berechnePower_P_fABC( fABC : List[float], freqs : np.ndarray, psds_normiert : np.ndarray, border : float ):
+        """ Input: z.B. border = 0.25 -> P über alle f:   fX - 0.25 < f < fX + 0.25
+            mit fX E fABC und fABC = [famA, famB, famC]"""
     
         P_fABC : List[float] = [0.0, 0.0, 0.0]
         for i in range( len(fABC) ):
             closeFreqs_Indices : List[float] = []
 
             for k in range( len(freqs) ):
-                if( fABC[i]-1 < freqs[k] < fABC[i]+1 ):
+                if( fABC[i]-border < freqs[k] < fABC[i]+border ):
                     closeFreqs_Indices.append(k)
+
+            print(f"n included frequencies in border-range = {len(closeFreqs_Indices)}")
 
             sum : float = 0.0
             for cFI in closeFreqs_Indices:
@@ -80,7 +99,7 @@ class Berechnungen:
             fmax=np.inf,
             n_fft=65536, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge Daten ist
             #n_overlap=0, #?
-            n_per_seg=5000, #10 sec
+            n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
             n_jobs=None,
             average = None,
             window="hamming",
@@ -99,7 +118,6 @@ class Berechnungen:
 
         # Konvertiere zu dB:
         psds_dB : np.ndarray = 10*np.log10(psds)
-        mittlere_psd_dB : float = 10*np.log10(mittlere_psd)
 
         return psds, psds_dB, freqs
 
