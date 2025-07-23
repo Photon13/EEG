@@ -46,6 +46,7 @@ class Main_singleBlock:
         rawFull = Roh.lade_fullRaw( pathVHDR )
         rawFull = Roh.renameChannels( rawFull )
         rawFull = Roh.assign_unusedChannels_asBads( rawFull )
+        rawFull = Roh.changeReference_toAverageAuricles(rawFull)
         #rawFull.notch_filter( rawFull, freqs = 50.0, notch_widths = 10 )
 
         ##############################################################################################################################################
@@ -81,13 +82,13 @@ class Main_singleBlock:
 
         # PLOT PSD FÜR BLOCK:
         #Plots.plot_PSD(psds, freqs)            #un_normiert
-        #Plots.plot_PSD(psds_dB, freqs)         #un_normiert, dB
+        Plots.plot_PSD(psds_dB, freqs)         #un_normiert, dB
         #Plots.plot_PSD(psds_normiert, freqs)   #normiert (psd < 1: unterdurchschnittlich, psd>1: durchschnittlich)
 
         return psds, psds_dB, psds_normiert, freqs, blockDict
 
 
-#Main_singleBlock.main_singleBlock(14)
+Main_singleBlock.main_singleBlock(5)
 
 
 #participant0:

@@ -52,7 +52,8 @@ class Roh:
         }
         raw = mne.set_eeg_reference(    # Replace Channel Cz with Cz - mean(A1,A2)
             raw, 
-            ref_channels = refDict, 
+            ref_channels = refDict,
+            #ref_channels = ["A1"],
             verbose = True 
         )[0]
         return raw

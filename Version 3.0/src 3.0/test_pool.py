@@ -43,6 +43,7 @@ arr2 = [1.692511782181838, 1.8703444879674094, 1.8265019245173904, 1.87198244795
 #pvalue=0.48302300996997716
 
 """
+#############################
 
 P_fY = []
 P_fXZ = []
@@ -66,8 +67,6 @@ print(COLORGREEN + f"mean(P_fXZ) = {HelpMethods.berechneMean_Eintraege(P_fXZ)}" 
 
 arr1 = P_fXYZ
 arr2 = P_fXZ
-
-
 
 
 
