@@ -8,20 +8,15 @@ from HelpMethods import HelpMethods
 
 class Normierung:
 
-    NORMIERUNGS_DIVIDENT_PARTICIANT_0 = 12.829149943758924
-    NORMIERUNGS_DIVIDENT_PARTICIANT_1 = None
-    NORMIERUNGS_DIVIDENT_PARTICIANT_2 = None
-    NORMIERUNGS_DIVIDENT_PARTICIANT_3 = None
-    NORMIERUNGS_DIVIDENT_PARTICIANT_4 = None
+    NormierungsDivident = {
+        "participant0" : 12.829149943758924,
+        "participant1" : None,
+        "participant2" : None,
+        "participant3" : None,
+        "participant4" : None,
+        "participant13" : -12.678245635897781
+    }
     # WERDEN IN MAIN GENERIERT
-
-    NormierungsDivident = [
-        NORMIERUNGS_DIVIDENT_PARTICIANT_0, 
-        NORMIERUNGS_DIVIDENT_PARTICIANT_1, 
-        NORMIERUNGS_DIVIDENT_PARTICIANT_2, 
-        NORMIERUNGS_DIVIDENT_PARTICIANT_3, 
-        NORMIERUNGS_DIVIDENT_PARTICIANT_4
-    ]
 
 
     @staticmethod

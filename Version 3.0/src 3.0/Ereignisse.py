@@ -30,11 +30,10 @@ class Ereignisse:
         event_dict = {
             "zBus" : 161,
             "shiftLeft" : 32,
-            #"shiftMiddle" : 2,         # not existent for participant0
+            "shiftMiddle" : 2,         # not existent for participant0
             "shiftRight" : 34,
             "button" : 128
         }
-        print(COLORRED + "S  2 currently not used!. Remember to enable it in plotMarkers_perTime()." + COLOREND)
         return events_tSampAbs, event_dict
     
 

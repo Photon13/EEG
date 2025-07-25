@@ -26,7 +26,7 @@ class Main_singleBlock:
     def main_singleBlock(blockNr):
 
         # TEILNEHMER DATEN:
-        pNr = 0                 # <---
+        pNr = 13                 # <---
 
         blockLength  = BlockParams.BLOCK_LENGTH 
         n_blocks     = BlockParams.N_BLOCKS
@@ -38,8 +38,8 @@ class Main_singleBlock:
         # PFADE:
         pathCWD   = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\BrainVision Recorder\\Version 3.0"
         folderEEG = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files"
-        pathVHDR  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp1.vhdr"
-        pathVMRK  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp1.vmrk"
+        pathVHDR  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp3.vhdr"
+        pathVMRK  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp3.vmrk"
         pathBlockDict = f"data\\blockDict\\participant{pNr}_blockDict.txt"
 
         # LADE RAW:
@@ -59,7 +59,7 @@ class Main_singleBlock:
         print("normierungsDivident = " + COLORYELLOW + f"{normierungsDivident}" + COLOREND)
         """
         # <- Breakpoint hierher
-        normierungsDivident = Normierung.NormierungsDivident[pNr]
+        normierungsDivident = Normierung.NormierungsDivident[f"participant{pNr}"]
 
         ##############################################################################################################################################
 
@@ -80,24 +80,20 @@ class Main_singleBlock:
 
         ##############################################################################################################################################
 
-        # PLOT PSD FÜR BLOCK:
+        # PLOT rawBlock:
+        #rawFull.plot()
+        #rawBlock.plot()
+        #inp = input("any")
+        # 
+        #  PLOT PSD FÜR BLOCK:
         #Plots.plot_PSD(psds, freqs)            #un_normiert
-        Plots.plot_PSD(psds_dB, freqs)         #un_normiert, dB
+        #Plots.plot_PSD(psds_dB, freqs)          #un_normiert, dB
         #Plots.plot_PSD(psds_normiert, freqs)   #normiert (psd < 1: unterdurchschnittlich, psd>1: durchschnittlich)
 
         return psds, psds_dB, psds_normiert, freqs, blockDict
 
 
-Main_singleBlock.main_singleBlock(5)
-
-
-#participant0:
-
-# P target > P NonTarget : blocks 0-10, 13, 15
-# P target < P NonTarget : block 11 (target "right"), block12 (target "right"), block14 (target "middle")
-
-# power line peak:
-# block0 ca. 6 Hz über und unter 50 Hz ?
+Main_singleBlock.main_singleBlock(2)
 
 
 

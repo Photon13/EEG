@@ -99,7 +99,9 @@ class Berechnungen:
             fmax=np.inf,
             n_fft=65536, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge Daten ist
             #n_overlap=0, #?
-            n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
+            #n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
+            n_per_seg=2000,
+            #n_per_seg=500,
             n_jobs=None,
             average = None,
             window="hamming",

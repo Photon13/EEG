@@ -50,7 +50,7 @@ P_fXZ = []
 for blockNr in range(BlockParams.N_BLOCKS):
     print(f"blockNr = {blockNr}")
     psds, psds_dB, psds_normiert, freqs, blockDict = Main_singleBlock.main_singleBlock( blockNr )
-    P_fXYZ = Berechnungen.berechnePower_P_fABC( [32.5, 33.0, 33.5], freqs, psds_normiert, border = 0.01 ) # unnormiert
+    P_fXYZ = Berechnungen.berechnePower_P_fABC( [39.4, 39.7, 40.1], freqs, psds_normiert, border = 0.1 ) # unnormiert
 
     P_fY.append(P_fXYZ[1])
     P_fXZ.append(P_fXYZ[0])
@@ -88,9 +88,17 @@ result = scipy.stats.mannwhitneyu(
 )
 print(result)
 
+"""
+participant 13
+[39.4, 39.7, 40.1], border = 0.1
 
-
-
+mean(P_fY) = 0.7272442120963496
+mean(P_fXZ) = 0.7887961770765703
+ShapiroResult(statistic=0.9990609940287789, pvalue=0.9414666277472261)
+ShapiroResult(statistic=0.9821373261428624, pvalue=0.05751283798669989)
+TtestResult(statistic=1.0631954263944479, pvalue=0.3947198856951476, df=2.095615706848581)
+MannwhitneyuResult(statistic=288.0, pvalue=0.3436707701502897)
+"""
 
 
 

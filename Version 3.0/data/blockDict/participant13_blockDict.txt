@@ -1,0 +1,362 @@
+{
+    "block0": {
+        "trial": 1,
+        "freqComb": "ACB",
+        "condition": "both"
+    },
+    "block1": {
+        "trial": 1,
+        "freqComb": "ACB",
+        "condition": "middle"
+    },
+    "block2": {
+        "trial": 1,
+        "freqComb": "ACB",
+        "condition": "right"
+    },
+    "block3": {
+        "trial": 1,
+        "freqComb": "ACB",
+        "condition": "left"
+    },
+    "block4": {
+        "trial": 1,
+        "freqComb": "BAC",
+        "condition": "both"
+    },
+    "block5": {
+        "trial": 1,
+        "freqComb": "BAC",
+        "condition": "left"
+    },
+    "block6": {
+        "trial": 1,
+        "freqComb": "BAC",
+        "condition": "right"
+    },
+    "block7": {
+        "trial": 1,
+        "freqComb": "BAC",
+        "condition": "middle"
+    },
+    "block8": {
+        "trial": 1,
+        "freqComb": "BCA",
+        "condition": "middle"
+    },
+    "block9": {
+        "trial": 1,
+        "freqComb": "BCA",
+        "condition": "left"
+    },
+    "block10": {
+        "trial": 1,
+        "freqComb": "BCA",
+        "condition": "both"
+    },
+    "block11": {
+        "trial": 1,
+        "freqComb": "BCA",
+        "condition": "right"
+    },
+    "block12": {
+        "trial": 1,
+        "freqComb": "CBA",
+        "condition": "both"
+    },
+    "block13": {
+        "trial": 1,
+        "freqComb": "CBA",
+        "condition": "middle"
+    },
+    "block14": {
+        "trial": 1,
+        "freqComb": "CBA",
+        "condition": "left"
+    },
+    "block15": {
+        "trial": 1,
+        "freqComb": "CBA",
+        "condition": "right"
+    },
+    "block16": {
+        "trial": 1,
+        "freqComb": "CAB",
+        "condition": "both"
+    },
+    "block17": {
+        "trial": 1,
+        "freqComb": "CAB",
+        "condition": "middle"
+    },
+    "block18": {
+        "trial": 1,
+        "freqComb": "CAB",
+        "condition": "left"
+    },
+    "block19": {
+        "trial": 1,
+        "freqComb": "CAB",
+        "condition": "right"
+    },
+    "block20": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block21": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block22": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block23": {
+        "trial": 1,
+        "freqComb": "ABC",
+        "condition": "middle"
+    },
+    "block24": {
+        "trial": 2,
+        "freqComb": "BAC",
+        "condition": "middle"
+    },
+    "block25": {
+        "trial": 2,
+        "freqComb": "BAC",
+        "condition": "both"
+    },
+    "block26": {
+        "trial": 2,
+        "freqComb": "BAC",
+        "condition": "right"
+    },
+    "block27": {
+        "trial": 2,
+        "freqComb": "BAC",
+        "condition": "left"
+    },
+    "block28": {
+        "trial": 2,
+        "freqComb": "CAB",
+        "condition": "right"
+    },
+    "block29": {
+        "trial": 2,
+        "freqComb": "CAB",
+        "condition": "both"
+    },
+    "block30": {
+        "trial": 2,
+        "freqComb": "CAB",
+        "condition": "left"
+    },
+    "block31": {
+        "trial": 2,
+        "freqComb": "CAB",
+        "condition": "middle"
+    },
+    "block32": {
+        "trial": 2,
+        "freqComb": "ACB",
+        "condition": "middle"
+    },
+    "block33": {
+        "trial": 2,
+        "freqComb": "ACB",
+        "condition": "right"
+    },
+    "block34": {
+        "trial": 2,
+        "freqComb": "ACB",
+        "condition": "both"
+    },
+    "block35": {
+        "trial": 2,
+        "freqComb": "ACB",
+        "condition": "left"
+    },
+    "block36": {
+        "trial": 2,
+        "freqComb": "CBA",
+        "condition": "right"
+    },
+    "block37": {
+        "trial": 2,
+        "freqComb": "CBA",
+        "condition": "left"
+    },
+    "block38": {
+        "trial": 2,
+        "freqComb": "CBA",
+        "condition": "both"
+    },
+    "block39": {
+        "trial": 2,
+        "freqComb": "CBA",
+        "condition": "middle"
+    },
+    "block40": {
+        "trial": 2,
+        "freqComb": "BCA",
+        "condition": "left"
+    },
+    "block41": {
+        "trial": 2,
+        "freqComb": "BCA",
+        "condition": "right"
+    },
+    "block42": {
+        "trial": 2,
+        "freqComb": "BCA",
+        "condition": "both"
+    },
+    "block43": {
+        "trial": 2,
+        "freqComb": "BCA",
+        "condition": "middle"
+    },
+    "block44": {
+        "trial": 2,
+        "freqComb": "ABC",
+        "condition": "middle"
+    },
+    "block45": {
+        "trial": 2,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block46": {
+        "trial": 2,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block47": {
+        "trial": 2,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block48": {
+        "trial": 3,
+        "freqComb": "ACB",
+        "condition": "right"
+    },
+    "block49": {
+        "trial": 3,
+        "freqComb": "ACB",
+        "condition": "both"
+    },
+    "block50": {
+        "trial": 3,
+        "freqComb": "ACB",
+        "condition": "middle"
+    },
+    "block51": {
+        "trial": 3,
+        "freqComb": "ACB",
+        "condition": "left"
+    },
+    "block52": {
+        "trial": 3,
+        "freqComb": "BAC",
+        "condition": "right"
+    },
+    "block53": {
+        "trial": 3,
+        "freqComb": "BAC",
+        "condition": "both"
+    },
+    "block54": {
+        "trial": 3,
+        "freqComb": "BAC",
+        "condition": "left"
+    },
+    "block55": {
+        "trial": 3,
+        "freqComb": "BAC",
+        "condition": "middle"
+    },
+    "block56": {
+        "trial": 3,
+        "freqComb": "BCA",
+        "condition": "both"
+    },
+    "block57": {
+        "trial": 3,
+        "freqComb": "BCA",
+        "condition": "middle"
+    },
+    "block58": {
+        "trial": 3,
+        "freqComb": "BCA",
+        "condition": "left"
+    },
+    "block59": {
+        "trial": 3,
+        "freqComb": "BCA",
+        "condition": "right"
+    },
+    "block60": {
+        "trial": 3,
+        "freqComb": "ABC",
+        "condition": "left"
+    },
+    "block61": {
+        "trial": 3,
+        "freqComb": "ABC",
+        "condition": "both"
+    },
+    "block62": {
+        "trial": 3,
+        "freqComb": "ABC",
+        "condition": "right"
+    },
+    "block63": {
+        "trial": 3,
+        "freqComb": "ABC",
+        "condition": "middle"
+    },
+    "block64": {
+        "trial": 3,
+        "freqComb": "CBA",
+        "condition": "right"
+    },
+    "block65": {
+        "trial": 3,
+        "freqComb": "CBA",
+        "condition": "both"
+    },
+    "block66": {
+        "trial": 3,
+        "freqComb": "CBA",
+        "condition": "left"
+    },
+    "block67": {
+        "trial": 3,
+        "freqComb": "CBA",
+        "condition": "middle"
+    },
+    "block68": {
+        "trial": 3,
+        "freqComb": "CAB",
+        "condition": "left"
+    },
+    "block69": {
+        "trial": 3,
+        "freqComb": "CAB",
+        "condition": "right"
+    },
+    "block70": {
+        "trial": 3,
+        "freqComb": "CAB",
+        "condition": "both"
+    },
+    "block71": {
+        "trial": 3,
+        "freqComb": "CAB",
+        "condition": "middle"
+    }
+}

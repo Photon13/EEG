@@ -13,21 +13,27 @@ class Roh:
         ) 
         return raw
 
-
     @staticmethod
-    def renameChannels(raw):
-
+    def get_mapping():
         #     Position     |  Elektrode    |  BVR Channel
         #__________________|_______________|_______________
         #    leftEar(A1)   |    13 grün    |      C3
         #    vertex(Cz)    |    14 grün    |      Cz
         #    rightEar(A2)  |    15 grün    |      C4
 
+
         mapping : dict = {              # old Channel name : new Channel name
-            "C3"  :  "A1",
-            "Cz"  :  "Cz",
-            "C4"  :  "A2",
+            "13"  :  "A1",
+            "14"  :  "Cz",
+            "15"  :  "A2",
         }
+ 
+        return mapping
+
+    @staticmethod
+    def renameChannels(raw):
+
+        mapping = Roh.get_mapping()
         raw.rename_channels( 
             mapping = mapping,
             verbose = True
@@ -37,7 +43,7 @@ class Roh:
 
     @staticmethod
     def assign_unusedChannels_asBads(raw):
-        picks = ["A1", "Cz", "A2"]      # Channels to keep
+        picks = ["Cz", "A1", "A2"]      # Channels to keep
         bads = raw.ch_names.copy()
         for ch in picks:
             bads.remove(ch)
