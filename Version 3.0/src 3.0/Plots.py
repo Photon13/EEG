@@ -51,24 +51,21 @@ class Plots:
 
     @staticmethod # self-made
     def plot_PSD(psds, freqs):
-        
+    
         fig,ax = plt.subplots( nrows=1 )
-
-        x = freqs
-        y = psds
-        #y = 10*np.log10(y)
 
         plt.title("PSD spectrum", fontsize=20)
         plt.xlabel("Frequency [Hz]", fontsize=16)
         plt.ylabel("Power Spectral Density [uV^2/Hz?]", fontsize=16)
 
-        ax.set(xlim=(0, 60), 
-            xticks=np.arange(start=0, stop=60, step=2),
-            #ylim=(0, 8), 
-            #yticks=np.arange(1, 8)
-        )
-        ax.plot(x,y)
+        # FULL VIEW:
+        ax.set( xlim=(0, 60),   xticks=np.arange(start=0, stop=60, step=1.0)  )
 
+        # DETAILED VIEW OF FREQ_RANGE:
+        #ax.set( xlim=(30, 55),   xticks=np.arange(start=30, stop=55, step=0.5)  )
+        #plt.xticks(fontsize = 7)
+
+        ax.plot(freqs, psds)
         ax.grid(which='minor', alpha=0.2)
         ax.grid(which='major', alpha=0.5)
 

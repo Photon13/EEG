@@ -32,7 +32,6 @@ class Roh:
 
     @staticmethod
     def renameChannels(raw):
-
         mapping = Roh.get_mapping()
         raw.rename_channels( 
             mapping = mapping,
@@ -60,6 +59,17 @@ class Roh:
             raw, 
             ref_channels = refDict,
             #ref_channels = ["A1"],
+            verbose = True 
+        )[0]
+        return raw
+    
+
+        
+    @staticmethod
+    def changeReference_toAuricleLeft(raw):
+        raw = mne.set_eeg_reference(
+            raw, 
+            ref_channels = ["A1"],
             verbose = True 
         )[0]
         return raw

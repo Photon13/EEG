@@ -44,10 +44,12 @@ class Main_singleBlock:
 
         # LADE RAW:
         rawFull = Roh.lade_fullRaw( pathVHDR )
+        
         rawFull = Roh.renameChannels( rawFull )
         rawFull = Roh.assign_unusedChannels_asBads( rawFull )
-        rawFull = Roh.changeReference_toAverageAuricles(rawFull)
-        #rawFull.notch_filter( rawFull, freqs = 50.0, notch_widths = 10 )
+
+        #rawFull = Roh.changeReference_toAverageAuricles(rawFull)
+        rawFull = Roh.changeReference_toAuricleLeft( rawFull )
 
         ##############################################################################################################################################
 
@@ -82,18 +84,21 @@ class Main_singleBlock:
 
         # PLOT rawBlock:
         #rawFull.plot()
-        #rawBlock.plot()
-        #inp = input("any")
+        rawBlock.copy().pick_types(include = ["Cz", "A1", "A2"]).plot(duration = 5.0)
+        inp = input("any")
         # 
         #  PLOT PSD FÜR BLOCK:
         #Plots.plot_PSD(psds, freqs)            #un_normiert
         #Plots.plot_PSD(psds_dB, freqs)          #un_normiert, dB
         #Plots.plot_PSD(psds_normiert, freqs)   #normiert (psd < 1: unterdurchschnittlich, psd>1: durchschnittlich)
 
+
+        mne.viz.plot_raw_psd(rawBlock, picks=["Cz"], xscale="linear", dB=True, estimate="power", fmin=25.0, fmax=60.0)
+        inp = input("any")
         return psds, psds_dB, psds_normiert, freqs, blockDict
 
 
-Main_singleBlock.main_singleBlock(2)
+Main_singleBlock.main_singleBlock(3)
 
 
 
