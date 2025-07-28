@@ -11,6 +11,8 @@ from Normierung import Normierung
 from BlockParams import BlockParams
 import Matrices
 from Plots import Plots
+from Elektroden import Elektroden
+from Paths import Paths
 
 COLORRED    = '\33[31m'
 COLORCYAN   = '\033[36m'
@@ -26,79 +28,70 @@ class Main_singleBlock:
     def main_singleBlock(blockNr):
 
         # TEILNEHMER DATEN:
-        pNr = 13                 # <---
+        pNr = 13                        # <---
+        durchgang = "3"                 # <---
+            #default durchgang = ""
 
+        # PFADE:
+        pathVHDR, pathVMRK, pathBlockDict = Paths.get_paths(pNr, durchgang)
+
+        # PARAMETER:
         blockLength  = BlockParams.BLOCK_LENGTH 
         n_blocks     = BlockParams.N_BLOCKS
         famA = BlockParams.FAM_A
         famB = BlockParams.FAM_B
         famC = BlockParams.FAM_C
 
+        # ELEKTRODEN
+        recE = Elektroden.RECORDING_ELECTRODE
+        refE = Elektroden.REFERENCE_ELECTRODE
 
-        # PFADE:
-        pathCWD   = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\BrainVision Recorder\\Version 3.0"
-        folderEEG = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files"
-        pathVHDR  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp3.vhdr"
-        pathVMRK  = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp3.vmrk"
-        pathBlockDict = f"data\\blockDict\\participant{pNr}_blockDict.txt"
 
-        # LADE RAW:
+        ##############################################################################################################################################
+
+        # LADE RAW FULL:
         rawFull = Roh.lade_fullRaw( pathVHDR )
-        
-        rawFull = Roh.renameChannels( rawFull )
         rawFull = Roh.assign_unusedChannels_asBads( rawFull )
 
-        #rawFull = Roh.changeReference_toAverageAuricles(rawFull)
-        rawFull = Roh.changeReference_toAuricleLeft( rawFull )
-
         ##############################################################################################################################################
 
-        # BESTIMME NORMIERUNGS-DIVIDENT:
-        #   (muss nur einmal pro Teilnehmer durchgeführt werden)
-        #   WERT DANN IN CLASS NORMIERUNG EINFÜGEN
-        """
-        normierungsDivident = Normierung.get_NormierungsDivident(rawFull, pathVMRK, n_blocks, blockLength)
-        print("normierungsDivident = " + COLORYELLOW + f"{normierungsDivident}" + COLOREND)
-        """
-        # <- Breakpoint hierher
-        normierungsDivident = Normierung.NormierungsDivident[f"participant{pNr}"]
-
-        ##############################################################################################################################################
-
-        # ERZEUGE RAW FÜR BESTIMMTEN BLOCK:
+        # PLOTTE CHANNELS RAW_BLOCK:
         start, end = RohBlock.getBlockStartAndEnd( blockNr, rawFull.info["sfreq"], blockLength, pathVMRK )
         rawBlock = rawFull.copy().crop( tmin = start, tmax = end )
 
-        # ABRUF BLOCK-DATEN:
-        with open( pathBlockDict, "r" ) as f:
-            blockDict = json.load(f)
-
-        freqComb  = blockDict[f"block{blockNr}"]["freqComb"]
-        target    = blockDict[f"block{blockNr}"]["condition"]
-
-        # BERECHNE PSD_WERTE FÜR SPEZIFIZIERTEN BLOCK:
-        psds, psds_dB, freqs  = Berechnungen.get_psds( rawBlock, blockLength )
-        psds_normiert         = Normierung.normiere_psds_dB( psds_dB, normierungsDivident )
+        
+        rawBlock = mne.set_eeg_reference( 
+            rawBlock, 
+            ref_channels = {
+                "14" : ["13", "15"]  # <---
+            }, 
+            verbose = True )[0]
+        
+        rawBlock.copy().pick_types( include = ["13", "14", "15"] ).plot( duration = 5.0 )  # <---
+        inp = input("any")
 
         ##############################################################################################################################################
 
-        # PLOT rawBlock:
-        #rawFull.plot()
-        rawBlock.copy().pick_types(include = ["Cz", "A1", "A2"]).plot(duration = 5.0)
-        inp = input("any")
-        # 
-        #  PLOT PSD FÜR BLOCK:
+        # BERECHNE PSD_WERTE ALS ARRAY:
+        psds, psds_dB, freqs  = Berechnungen.get_psds( rawBlock, blockLength )
+
         #Plots.plot_PSD(psds, freqs)            #un_normiert
-        #Plots.plot_PSD(psds_dB, freqs)          #un_normiert, dB
-        #Plots.plot_PSD(psds_normiert, freqs)   #normiert (psd < 1: unterdurchschnittlich, psd>1: durchschnittlich)
+        Plots.plot_PSD(psds_dB, freqs)          #un_normiert, dB
 
+        ##############################################################################################################################################
 
-        mne.viz.plot_raw_psd(rawBlock, picks=["Cz"], xscale="linear", dB=True, estimate="power", fmin=25.0, fmax=60.0)
+        # BERECHNE PSD ÜBER MNE:
+        mne.viz.plot_raw_psd(rawBlock, picks=["14"], xscale="linear", dB=True, estimate="power", fmin=25.0, fmax=60.0)
         inp = input("any")
-        return psds, psds_dB, psds_normiert, freqs, blockDict
+
+        ##############################################################################################################################################
 
 
-Main_singleBlock.main_singleBlock(3)
+
+
+Main_singleBlock.main_singleBlock(1)
+
+
 
 
 

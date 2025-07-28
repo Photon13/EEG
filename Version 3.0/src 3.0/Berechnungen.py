@@ -25,7 +25,7 @@ class Berechnungen:
 
 
     @staticmethod
-    def berechnePower_P_fABC( fABC : List[float], freqs : np.ndarray, psds_normiert : np.ndarray, border : float ):
+    def berechnePower_P_fABC( fABC : List[float], freqs : np.ndarray, psds : np.ndarray, border : float ):
         """ Input: z.B. border = 0.25 -> P über alle f:   fX - 0.25 < f < fX + 0.25
             mit fX E fABC und fABC = [famA, famB, famC]"""
     
@@ -41,7 +41,7 @@ class Berechnungen:
 
             sum : float = 0.0
             for cFI in closeFreqs_Indices:
-                sum += psds_normiert[cFI]
+                sum += psds[cFI]
             mean = sum / len(closeFreqs_Indices)
             P_fABC[i] = mean #! falsch
         return P_fABC
@@ -83,7 +83,7 @@ class Berechnungen:
 
         voltage= mne.io.Raw.get_data(
             rawBlock,
-            picks="Cz", 
+            picks="14", 
             reject_by_annotation=None, 
             return_times=False, 
             units='uV', # Microvolt
@@ -99,9 +99,9 @@ class Berechnungen:
             fmax=np.inf,
             n_fft=65536, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge Daten ist
             #n_overlap=0, #?
-            #n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
+            n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
             #n_per_seg=2000,
-            n_per_seg=500,
+            #n_per_seg=500,
             n_jobs=None,
             average = None,
             window="hamming",

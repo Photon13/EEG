@@ -4,7 +4,7 @@ import numpy as np
 class HelpMethods:
 
     @staticmethod # Helpmethod
-    def berechneMean_Eintraege( arr : np.ndarray | List ):
+    def berechne_meanEintraege( arr : np.ndarray | List ):
         sum = 0.0
         for e in arr:
             sum += e
