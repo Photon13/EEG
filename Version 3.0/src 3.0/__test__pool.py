@@ -1,4 +1,4 @@
-from Main_singleBlock import Main_singleBlock
+from __init__singleBlock import Main_singleBlock
 from BlockParams import BlockParams
 from Berechnungen import Berechnungen
 from HelpMethods import HelpMethods

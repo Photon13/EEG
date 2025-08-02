@@ -79,11 +79,14 @@ class Berechnungen:
     
 
     @staticmethod
-    def get_psds( rawBlock, blockLength : int ):
+    def get_psds( rawBlock, blockLength : int, n_fft : int, n_per_seg : int, n_overlap : int, pick : str ):
+        """ n_fft sei festgelegt als kleinste Power of two, die größer als n_per_seg ist
+            n_per_seg ist die Fensterlänge in Samples
+            n_overlap ist die Anzahl Samples die pro Fenster überlappen darf """
 
         voltage= mne.io.Raw.get_data(
             rawBlock,
-            picks="14", 
+            picks=pick, 
             reject_by_annotation=None, 
             return_times=False, 
             units='uV', # Microvolt
@@ -97,11 +100,9 @@ class Berechnungen:
             sfreq = rawBlock.info["sfreq"],
             fmin=0,
             fmax=np.inf,
-            n_fft=65536, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge Daten ist
-            #n_overlap=0, #?
-            n_per_seg=5000, #10 sec  #niedrigere werte glätten PSD(f)
-            #n_per_seg=2000,
-            #n_per_seg=500,
+            n_fft = n_fft, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge n_per_seg ist
+            n_overlap=n_overlap, #?
+            n_per_seg=n_per_seg, #10 sec  #niedrigere werte glätten PSD(f)
             n_jobs=None,
             average = None,
             window="hamming",
@@ -122,6 +123,27 @@ class Berechnungen:
         psds_dB : np.ndarray = 10*np.log10(psds)
 
         return psds, psds_dB, freqs
+
+
+
+    @staticmethod
+    def get_multiplePsds(rawBlock, blockLength : int, n_fft : int, n_per_seg : int, n_overlap : int, picks : List[str]):
+        psds_list    = list()
+        psds_dB_list = list()
+        freqs_list   = list()
+        
+        for pick in picks:
+            psds, psds_dB, freqs = Berechnungen.get_psds( rawBlock, blockLength, n_fft, n_per_seg, n_overlap, pick )
+            psds_list.append(psds)
+            psds_dB_list.append(psds_dB)
+            freqs_list.append(freqs)
+        
+        psds_arr    = np.array(psds_list)
+        psds_dB_arr = np.array(psds_dB_list)
+        freqs_arr   = np.array(freqs_list)
+
+        return psds_arr, psds_dB_arr, freqs_arr
+
 
     
 

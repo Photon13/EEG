@@ -28,8 +28,8 @@ class Main_singleBlock:
     def main_singleBlock(blockNr):
 
         # TEILNEHMER DATEN:
-        pNr = 13                        # <---
-        durchgang = "3"                 # <---
+        pNr = 2                        # <---
+        durchgang = "2"                 # <---
             #default durchgang = ""
 
         # PFADE:
@@ -42,38 +42,35 @@ class Main_singleBlock:
         famB = BlockParams.FAM_B
         famC = BlockParams.FAM_C
 
-        # ELEKTRODEN
-        recE = Elektroden.RECORDING_ELECTRODE
-        refE = Elektroden.REFERENCE_ELECTRODE
-
-
         ##############################################################################################################################################
 
         # LADE RAW FULL:
         rawFull = Roh.lade_fullRaw( pathVHDR )
-        rawFull = Roh.assign_unusedChannels_asBads( rawFull )
+        rawFull = rawFull.notch_filter(freqs = 50.0, notch_widths = 1.0)
+        #rawFull = Roh.assign_unusedChannels_asBads( rawFull )
 
         ##############################################################################################################################################
 
+        print(rawFull.info["sfreq"])
         # PLOTTE CHANNELS RAW_BLOCK:
         start, end = RohBlock.getBlockStartAndEnd( blockNr, rawFull.info["sfreq"], blockLength, pathVMRK )
         rawBlock = rawFull.copy().crop( tmin = start, tmax = end )
 
-        
-        rawBlock = mne.set_eeg_reference( 
-            rawBlock, 
-            ref_channels = {
-                "14" : ["13", "15"]  # <---
-            }, 
-            verbose = True )[0]
-        
-        rawBlock.copy().pick_types( include = ["13", "14", "15"] ).plot( duration = 5.0 )  # <---
-        inp = input("any")
+
+        rawBlock.pick_channels(["20", "25", "27"])
+        rawBlock = mne.set_eeg_reference( rawBlock, ref_channels = "average", verbose = True )[0]
+
+        #rawBlock = mne.set_eeg_reference( rawBlock, ref_channels = ["20", "25", "27"], verbose = True )[0]    # <---
+
+
+        #rawBlock.copy().plot( duration = 1.0 )
+        #rawBlock.copy().pick_types( include = ["13", "14", "15", "20", "25", "27"] ).plot( duration = 5.0 )  # <---
+        #inp = input("any")
 
         ##############################################################################################################################################
 
         # BERECHNE PSD_WERTE ALS ARRAY:
-        psds, psds_dB, freqs  = Berechnungen.get_psds( rawBlock, blockLength )
+        psds, psds_dB, freqs  = Berechnungen.get_psds( rawBlock, blockLength, "20" )
 
         #Plots.plot_PSD(psds, freqs)            #un_normiert
         Plots.plot_PSD(psds_dB, freqs)          #un_normiert, dB
@@ -81,15 +78,17 @@ class Main_singleBlock:
         ##############################################################################################################################################
 
         # BERECHNE PSD ÜBER MNE:
-        mne.viz.plot_raw_psd(rawBlock, picks=["14"], xscale="linear", dB=True, estimate="power", fmin=25.0, fmax=60.0)
-        inp = input("any")
+
+        #mne.viz.plot_raw_psd(rawBlock, xscale="linear", dB=True, estimate="power", fmin=0.0, fmax=60.0)
+        #mne.viz.plot_raw_psd(rawFull, xscale="linear", dB=True, estimate="power", fmin=0.0, fmax=60.0)
+        #inp = input("any")
 
         ##############################################################################################################################################
 
 
 
 
-Main_singleBlock.main_singleBlock(1)
+Main_singleBlock.main_singleBlock(2)
 
 
 
