@@ -1,3 +1,7 @@
+# Solution for ICAParams must be found
+# Tuple of args given to mne.preprocessing.ICA() ?
+
+
 import mne
 import json
 import numpy as np
@@ -20,23 +24,60 @@ import Matrices
 from Plots import Plots
 from Elektroden import Elektroden
 from Paths import Paths
+from AllResults import AllResults
+
+COLORRED    = '\33[31m'
+COLORCYAN   = '\033[36m'
+COLORYELLOW = '\033[33m'
+COLORGREEN  = "\033[0;32m"
+COLORPURPLE = '\033[35m'
+COLOREND    = '\033[0m'
 
 
 
-##########################################################################################################################################
 
 
 
-# TEILNEHMER DATEN:
+###########################
+
 pNr = 2                        # <---
-durchgang = "2"                 # <---
-    #default durchgang = ""
+durchgang = "2"                # <---
 
-# pnr=2 durchgang=2
-# pnr=13 durchgang=3
+
+recordingElectrodes = ["20", "25", "27"]
+referenceElectrodes = ["20", "25", "27"]
+picks = ["20", "25", "27"]
+
+l_freq = 1.0
+h_freq = 60.0
+notch_freq = 50.0
+notch_width = 1.0
+
+n_componentsICA = 0.999
+methodICA = 'fastica'
+seed=99
+
+n_fft = 65536
+n_per_seg = 60000
+n_overlap = 0
+###########################
+
+
+
+
+
+
 
 
 # PFADE:
+pathAllResults = "data\\results\\allResults.pkl"
+
+#allResults = list()
+#AllResults.saveAsPickle_allResults(allResults, pathAllResults)
+
+allResults = AllResults.loadFromPickle_allResults(pathAllResults)
+print(allResults)
+
 pathVHDR, pathVMRK, pathBlockDict = Paths.get_paths(pNr, durchgang)
 with open( pathBlockDict, "r" ) as f:
     blockDict = json.load(f)
@@ -50,6 +91,11 @@ famC = BlockParams.FAM_C
 
 
 
+
+
+
+
+
 ##########################################################################################################################################
 
 
@@ -58,47 +104,42 @@ famC = BlockParams.FAM_C
 rawFull = Roh.lade_fullRaw( pathVHDR )
 
 
-"""
+
 # ICA:
-ica = mne.preprocessing.ICA(n_components=0.999, method='fastica', random_state=99)
+ica = mne.preprocessing.ICA(
+    n_components = n_componentsICA, 
+    method = methodICA, 
+    random_state=seed
+)
 ica.fit(rawFull)  # bad segments that were marked in the EEG signal will be excluded.
-#ica.plot_sources(rawFull)
+ica.plot_sources(rawFull)
 ica.apply(rawFull)
-"""
+
 
 
 # FILTERING:
-rawFull = rawFull.notch_filter(freqs = 50.0, notch_widths = 1.0)
-rawFull = rawFull.filter(l_freq=1, h_freq=60)
+rawFull = rawFull.notch_filter( freqs = notch_freq, notch_widths = notch_width )
+rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 
+# RE_REFERENCING:
+rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes, verbose = True )[0] 
 
-
-# DISCARD CHANNELS NOT BEING PICKS:
+# DISCARD CHANNELS NOT BEING RECORDING ELECTRODES:
 allChannels = rawFull.info["ch_names"]
-picks = ["20", "25", "27"]                 #### <----- 
-# ["13", "15", "14", "20", "25", "27"]
-
-
 bad_channels = allChannels.copy()
-for ch in picks: 
+for ch in recordingElectrodes: 
     bad_channels.remove(ch)
 rawFull.drop_channels(bad_channels)
 
 
-
-
-# RE_REFERENCING:
-reference = "average"         #### <----- 
-
-rawFull = mne.set_eeg_reference( rawFull, ref_channels = reference, verbose = True )[0]    
-
-
+   
 
 ##########################################################################################################################################
 
 
 
 zBusse : List[int] = Ereignisse.get_zBusse( pathVMRK )
+
 
 # SORT BLOCKS:
 # create dict:
@@ -122,7 +163,6 @@ for i in range(72):
     croppedRaws.append(segment)
 
 
-
 # COLLECT RAWS OF SIMILAR BLOCKS:
 raws_perFreqCombCond : dict[List[mne.io.Raw]] = copy.deepcopy( bIndices_perFreqCombCond )
 
@@ -142,42 +182,30 @@ for freqCombCond in bIndices_perFreqCombCond:
 for freqCombCond in raws_perFreqCombCond:
     rawList : List[mne.io.Raw] = raws_perFreqCombCond[freqCombCond] 
     rawConcat = mne.concatenate_raws(rawList)
-  
-    psds, psds_dB, freqs, voltage, times = Berechnungen.get_psds( 
+
+    psds_arr, psds_dB_arr, freqs_arr, voltage_arr, times_arr = Berechnungen.get_multiplePsds( 
         rawConcat, 
-        n_fft = 65536,
-        n_per_seg = 10000,
-        n_overlap = 5000,
-        #n_per_seg = 60000,
-        #n_overlap = 0, 
-        picks = picks )        #### <----
-    
-    # === Average PSD across channels ===
-    psds_dB_mean = psds_dB.mean(axis=0) #stimmt
-    
-    ##########################################################################################################################################
+        blockLength = blockLength,
+        n_fft       = n_fft,
+        n_per_seg   = n_per_seg,
+        n_overlap   = n_overlap, 
+        picks       = recordingElectrodes 
+    )
 
+    allResults = AllResults.appendResult_toAllResults(
+        allResults          = allResults,                               
+        file_id             = f"participant{pNr}_mainExp{durchgang}.vhdr",                                     
+        freqCombCond        = freqCombCond,
+        recordingElectrodes = recordingElectrodes,
+        referenceElectrodes = referenceElectrodes, 
+        filterParams        = (l_freq, h_freq, notch_freq, notch_width),
+        ICAParams           = (n_componentsICA, methodICA, seed), #??????
+        fourierParams       = (n_fft, n_per_seg, n_overlap), 
+        voltageFreqs        = (voltage_arr, times_arr), 
+        psdsFreqs           = (psds_arr, psds_dB_arr, freqs_arr)
+    )
+    AllResults.saveAsPickle_allResults( allResults, pathAllResults )
 
+    print("Newly appended to allResults: " + COLORCYAN + f"{allResults[-1]}" + COLOREND)
 
-    plt.figure(figsize=(10, 5))
-    plt.plot(freqs, psds_dB_mean, label="Average PSD (across channels)")         #### <-----
-
-    for tf in [35.9, 39.7, 43.2]:
-        plt.axvline(tf, color='red', linestyle='--', alpha=0.8, linewidth=1.2) # Vertical lines
-
-    plt.title(f"PSD of Concatenated Blocks ({freqCombCond})")
-    plt.xlabel("Frequency [Hz]")
-    plt.ylabel("Power Spectral Density [dB]") # müsste uV^2/Hz sein??
-    plt.xlim(34, 45)
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-
-    plot_path = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\plots"
-    fileName = plot_path + f"\\participant{pNr}\\PSD_concatBlocks_{freqCombCond}_picks_{picks}_ref_{reference}"
-    plt.savefig(fname = fileName)
-
-
-
-    ##########################################################################################################################################
     

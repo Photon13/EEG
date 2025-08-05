@@ -1,3 +1,9 @@
+# self-made psd creating function (using psd_array_welch()) does not give the same output as compute_psd()
+# -> different psd-values ca. -15 VS ca. -137 (whatever the units are (?))
+
+# after putting n_fft, n_per_seg and n_overlap into psd_array_welch, multiple graphs are shown in plot, not a single one!
+
+
 import mne
 import numpy as np
 import matplotlib
@@ -11,32 +17,28 @@ from collections import defaultdict
 
 import json
 
-from Ereignisse import Ereignisse
-from RohBlock import RohBlock
-from Paths import Paths
-from BlockParams import BlockParams
 
 
 participantNr = 2
 durchgang = 2
 
-picks = ['20', '25', '27', '13', '15']
+picks = ['20', '25', '27']
 reference = "average"
 
 
 
 
-blockLength  = BlockParams.BLOCK_LENGTH 
-n_blocks     = BlockParams.N_BLOCKS
-famA = BlockParams.FAM_A
-famB = BlockParams.FAM_B
-famC = BlockParams.FAM_C
+blockLength  = 30
+n_blocks     = 72
+famA = 35.9
+famB = 39.7
+famC = 43.2
 
 
-pathVHDR, pathVMRK, pathBlockDict = Paths.get_paths(participantNr, durchgang)
+pathBlockDict = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\BrainVision Recorder\\Version 3.0\\data\\blockDict\\participant2_blockDict.txt"
 
 with open( pathBlockDict, "r" ) as f:
-    blockDict = json.load(f)
+    block_dict = json.load(f)
 
 import mne
 import numpy as np
@@ -48,15 +50,19 @@ from pathlib import Path
 import os
 from meegkit import dss
 
-default_path = Path('C:/Users/pppar/Downloads')
-eeg_path = default_path / 'participant2_mainExp2.eeg'
-header_path = default_path / 'participant2_mainExp2.vhdr'
-marker_path = default_path / 'participant2_mainExp2.vmrk'
+#default_path = Path('C:/Users/pppar/Downloads')
+default_path = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files"
+#eeg_path = default_path / 'participant2_mainExp2.eeg'
+eeg_path = default_path + f"\\participant2\\participant2_mainExp2.eeg"
+#header_path = default_path / 'participant2_mainExp2.vhdr'
+header_path = default_path + f"\\participant2\\participant2_mainExp2.vhdr"
+#marker_path = default_path / 'participant2_mainExp2.vmrk'
+marker_path = default_path + f"\\participant2\\participant2_mainExp2.vmrk"
 
 eeg_raw = mne.io.read_raw_brainvision(header_path, preload=True)
 to_drop = [str(ch) for ch in np.arange(32, 65)]
 eeg_raw.drop_channels(to_drop)
-eeg_raw.plot()
+#eeg_raw.plot()
 data = mne.io.RawArray(data=eeg_raw.get_data(), info=eeg_raw.info)
 eeg_notch, iterations = dss.dss_line(eeg_raw.get_data().T, fline=50,
                                      sfreq=data.info["sfreq"],
@@ -67,16 +73,17 @@ hi_filter = 1
 lo_filter = 60
 
 eeg_filtered = eeg_raw.copy().filter(hi_filter, lo_filter)
-eeg_filtered.plot()
+#eeg_filtered.plot()
 
+"""
 ica = mne.preprocessing.ICA(n_components=0.999, method='fastica', random_state=99)
 ica.fit(eeg_filtered)  # bad segments that were marked in the EEG signal will be excluded.
 # b. investigate...:
 ica.plot_sources(eeg_filtered)
 # c. apply ICA to remove selected components: blinks, eye movements etc.
 ica.apply(eeg_filtered)
-
-eeg_filtered.pick(['20', '25', '27', '13', '15'])
+"""
+eeg_filtered.pick(picks)
 eeg_filtered.set_eeg_reference('average')
 
 from collections import defaultdict
@@ -129,6 +136,7 @@ for i, group in enumerate(block_keys):
     info = create_info(ch_names=ch_names, sfreq=sfreq, ch_types=ch_types)
     raw_group = io.RawArray(concatenated_data, info)
 
+    """
     # === Compute high-res Welch PSD ===
     psd = raw_group.compute_psd(
         method='welch',
@@ -140,7 +148,20 @@ for i, group in enumerate(block_keys):
 
     # Convert to dB
     psds_db = 10 * np.log10(psd.get_data())  # shape: (n_channels, n_freqs)
+    print(psds_db)
     freqs = psd.freqs
+    """
+
+    psds, freqs = mne.time_frequency.psd_array_welch(
+        x         = raw_group.get_data(),
+        sfreq     = raw_group.info["sfreq"],
+        n_fft     = 65536,
+        n_per_seg = 5000,
+        n_overlap = 2500,
+        average   = None
+    )
+    psds_db = 10 * np.log10(psds)
+
 
     # === Average PSD across channels ===
     avg_psd = psds_db.mean(axis=0)
@@ -162,7 +183,7 @@ for i, group in enumerate(block_keys):
     plt.tight_layout()
     plt.show()
 
-    plt.savefig(fname = f"plots\\PSD_concatBlocks_{target_group}_picks_{picks}_ref_{reference}")
+    plt.savefig(fname = f"d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\plots\participant2\\PSD_concatBlocks_{target_group}_picks_{picks}_ref_{reference}")
     #plt.show()
     #inp = input("any ")
 

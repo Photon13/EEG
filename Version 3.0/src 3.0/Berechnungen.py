@@ -79,70 +79,46 @@ class Berechnungen:
     
 
     @staticmethod
-    def get_psds( rawBlock, blockLength : int, n_fft : int, n_per_seg : int, n_overlap : int, pick : str ):
-        """ n_fft sei festgelegt als kleinste Power of two, die größer als n_per_seg ist
-            n_per_seg ist die Fensterlänge in Samples
-            n_overlap ist die Anzahl Samples die pro Fenster überlappen darf """
+    def get_psds(rawBlock, n_fft : int, n_per_seg : int, n_overlap : int, picks : List[str]):
+        """       
+        psds = [ [psd(f1) psd(f2) ... psd(fn)]  [psd(f1) psd(f2) ... psd(fn)] ] # Anzahl innerer Arrays entspricht Anzahl picks
+        Bsp. Adressierung erstes pick: psds[0], Adressierung zweites pick: psds[1]
+        gleiches gilt für psds_dB, und für voltage (hier [ [U(t1) U(t2) ....] [...]])
 
-        voltage= mne.io.Raw.get_data(
+        times und freqs sind 1-dim
+        """
+        
+        voltage, times = mne.io.Raw.get_data(
             rawBlock,
-            picks=pick, 
-            reject_by_annotation=None, 
-            return_times=False, 
-            units='uV', # Microvolt
-            tmin = 0.0,
-            tmax = blockLength,
-            verbose=True,
-        )[0]
-
-        psds, freqs = mne.time_frequency.psd_array_welch(
-            voltage,
-            sfreq = rawBlock.info["sfreq"],
-            fmin=0,
-            fmax=np.inf,
-            n_fft = n_fft, # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge n_per_seg ist
-            n_overlap=n_overlap, #?
-            n_per_seg=n_per_seg, #10 sec  #niedrigere werte glätten PSD(f)
-            n_jobs=None,
-            average = None,
-            window="hamming",
-            remove_dc=False, #?
-            output="power",
-            verbose=None,
+            picks=picks, 
+            return_times=True, 
+            units='uV', # Volt
+            verbose=True
         )
-
+        psds, freqs = mne.time_frequency.psd_array_welch(
+            x         = voltage,
+            sfreq     = rawBlock.info["sfreq"],
+            n_fft     = n_fft,     # Power of two, die am nächsten an Länge Daten (rawBlock) liegt und > Länge n_per_seg ist
+            n_overlap = n_overlap, #?
+            n_per_seg = n_per_seg, #10 sec  #niedrigere werte glätten PSD(f)
+            n_jobs    = None,
+            average   = None,
+            remove_dc = False, #?
+            verbose   = True
+        )
         psds : np.ndarray = psds.mean(-1) # mittelt Daten der einzelnen Transformations-Segmente
-
-        sum = 0
-        for e in psds:
-            sum += e
-        mittlere_psd : float = float(sum) / float(len(psds)) # mittlere PDS 
-        print(mittlere_psd)
-
         # Konvertiere zu dB:
         psds_dB : np.ndarray = 10*np.log10(psds)
 
-        return psds, psds_dB, freqs
 
+        print("\n")
 
-
-    @staticmethod
-    def get_multiplePsds(rawBlock, blockLength : int, n_fft : int, n_per_seg : int, n_overlap : int, picks : List[str]):
-        psds_list    = list()
-        psds_dB_list = list()
-        freqs_list   = list()
-        
-        for pick in picks:
-            psds, psds_dB, freqs = Berechnungen.get_psds( rawBlock, blockLength, n_fft, n_per_seg, n_overlap, pick )
-            psds_list.append(psds)
-            psds_dB_list.append(psds_dB)
-            freqs_list.append(freqs)
-        
-        psds_arr    = np.array(psds_list)
-        psds_dB_arr = np.array(psds_dB_list)
-        freqs_arr   = np.array(freqs_list)
-
-        return psds_arr, psds_dB_arr, freqs_arr
+        print(times)
+        print(freqs)
+        print(times[0])
+        print(freqs[0])
+        print("\n")
+        return psds, psds_dB, freqs, voltage, times
 
 
     
