@@ -32,12 +32,16 @@ class AllResults:
 
 
     @staticmethod
-    def loadFromPickle_allResults( path : str ) -> pd.DataFrame:
+    def loadFromPickle_allResults( path : str ) -> List:
         with open(path, "rb") as f:
             allResults = pickle.load(f)
         return allResults
 
-
+    @staticmethod
+    def deleteEntry_atGivenIndex(allResults : List, index : int):
+        del allResults[index]
+        return allResults
+    
     @staticmethod
     def showAllResults( input : str | List[dict] ):
         if(type(input) == str):
@@ -107,6 +111,8 @@ class AllResultsPower:
         # order of recordingElectrodes is perserved inside of 
         # voltage, times, psds, psds_dB and freqs
     """   
+
+
 
 
 
