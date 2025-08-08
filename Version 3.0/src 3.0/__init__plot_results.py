@@ -14,6 +14,8 @@ import scipy.signal
 import sys
 
 from AllResults import AllResults
+from BlockParams import BlockParams
+
 
 COLORRED    = '\33[31m'
 COLORCYAN   = '\033[36m'
@@ -32,7 +34,7 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
     plt.figure( figsize=(10, 5) )
     plt.plot(   freqs, avg_pows, label="", color = "black" )
 
-    for fam in [35.9, 39.7, 43.2]:
+    for fam in BlockParams.FAMS_ABC:
         plt.axvline( fam, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 ) # Vertical lines
 
     plt.title(f"{freqCombCond}", fontsize=14, fontweight='bold', pad=20 )
@@ -40,10 +42,10 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
     plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=12) 
 
     ####
-    #min_f, max_f, step = 0.0, 60.0, 5.0    # <---
+    min_f, max_f, step = 0.0, 60.0, 5.0    # <---
 
-    min_f, max_f, step = 35.0, 45.0, 0.5
-    plt.ylim( bottom = -1e-13, top = 0.2*1e-10  )
+    #min_f, max_f, step = 35.0, 45.0, 0.5
+    #plt.ylim( bottom = -1e-13, top = 1.5*1e-11  )
     ####
 
     plt.xlim( min_f, max_f )
@@ -51,16 +53,15 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
 
 
     plt.grid(True)
-    plt.legend() #?
     plt.tight_layout() #?
     plt.show()
 
     
     fileName = folderName + f"\\psd_{freqCombCond}_participant{pNr}.png"
 
-    plt.savefig(fname = fileName)   # <---
-    #plt.show()                     
-    #inp = input("any ")
+    #plt.savefig(fname = fileName)   # <---
+    plt.show()                     
+    inp = input("any ")
 
 
 
@@ -77,7 +78,7 @@ allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
 AllResults.showAllResults( allResultsPSD )         # <--- 
                                                        
-index = 8 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
+index = 0 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
 ###########################################
 
 

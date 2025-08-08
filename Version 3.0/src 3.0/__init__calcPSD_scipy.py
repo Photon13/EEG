@@ -72,7 +72,7 @@ allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
 
 AllResults.showAllResults( allResultsVolt )                                                          # <--- 
-index = 8 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
+index = 0 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
 
 
 

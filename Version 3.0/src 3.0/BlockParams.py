@@ -4,7 +4,7 @@ class BlockParams:
     FAM_B = 39.7
     FAM_C = 43.2
 
-    F_ABC = [FAM_A, FAM_B, FAM_C]
+    FAMS_ABC = [FAM_A, FAM_B, FAM_C]
 
     N_BLOCKS = 3*4*6
     BLOCK_LENGTH = 30 # [sec]

@@ -16,6 +16,4 @@ class Elektroden:
         return ["13", "14", "15", "20", "25", "27"]
     
 
-
-
 #print( Elektroden.get_usedElectrodes() )

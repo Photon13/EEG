@@ -52,11 +52,7 @@ with open( pathBlockDict, "r" ) as f:
     blockDict = json.load(f)
 
 
-pathAllResults = f"data\\results\\allResultsVolt_participant{pNr}_mainExp{durchgang}.pkl"
 
-AllResults.create_newAllResultsList( pathAllResults )
-
-allResultsVolt = AllResults.loadFromPickle_allResults( pathAllResults )
 ###########################
 
 
@@ -72,7 +68,7 @@ bad_channels = []
 for i in range(1, 64+1):
     bad_channels.append(str(i))
 
-for ch in ["20", "25", "27"] :      # <---    
+for ch in ["25", "13", "15"] :      # <---    
     bad_channels.remove(ch)  
 
 rawFull.drop_channels(bad_channels)
@@ -89,7 +85,7 @@ rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 # INDEPENDENT COMPONENT ANALYSIS:
 n_componentsICA = None #0.999       # <---
 methodICA = None #'fastica'         # <---
-seed= None #99                      # <---
+seed = None #99                      # <---
 
 """
 ica = mne.preprocessing.ICA( n_components = n_componentsICA, method = methodICA, random_state=seed )
@@ -99,12 +95,11 @@ ica.apply(rawFull)
 """
 ###########################
 # RE-REFERENCING:
-recordingElectrodes = ["20", "25", "27"]                            # <---
-referenceElectrodes = ["20", "25", "27"]         # <---
+recordingElectrodes = ["25"]               # <---
+referenceElectrodes = ["13", "15"]          # <---
 
-#rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes, verbose = True )[0] 
+rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes, verbose = True )[0]       #  <---
 ###########################
-
 
 
 
@@ -120,6 +115,10 @@ times_list         = list()
 
 for freqCombCond in raws_perFreqCombCond: #key = freqCombCond
     rawConcat = mne.concatenate_raws( raws_perFreqCombCond[freqCombCond] )
+
+    #print("freqCombCond" + COLORCYAN + f"{freqCombCond}" + COLOREND)     # <---
+    #rawConcat.plot()
+    #inp = input("any ")  
 
     voltageUnit = "V"
     voltage, times = mne.io.Raw.get_data(
@@ -144,6 +143,8 @@ for j in range( len(freqCombConds_list) ):
     timesDict[f"{freqCombConds_list[j]}"] = times_list[j] 
 
 
+
+
 paramDict = {                                                 
     "file_id"             : f"participant{pNr}_mainExp{durchgang}.vhdr",                                   
  
@@ -163,6 +164,11 @@ paramDict = {
 }
     
 print( COLORPURPLE + f"{paramDict}" + COLOREND )
+
+pathAllResults = f"data\\results\\allResultsVolt_participant{pNr}_mainExp{durchgang}.pkl"
+AllResults.create_newAllResultsList( pathAllResults )
+allResultsVolt = AllResults.loadFromPickle_allResults( pathAllResults )
+
 allResultsVolt.append(paramDict)
 AllResults.saveAsPickle_allResults( allResultsVolt, pathAllResults )
 
