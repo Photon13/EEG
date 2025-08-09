@@ -1,30 +1,19 @@
-from typing import List
-import mne
-import pickle
-import os
-import sys
+from AllResults import AllResults
+from BlockParams import BlockParams
 
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 plt.ion()
-
 import numpy as np
-import scipy.signal
-import sys
+import os
 
-from AllResults import AllResults
-from BlockParams import BlockParams
-
-
-COLORRED    = '\33[31m'
+COLORGREEN  = '\033[0;32m'
 COLORCYAN   = '\033[36m'
 COLORYELLOW = '\033[33m'
-COLORGREEN  = "\033[0;32m"
 COLORPURPLE = '\033[35m'
+COLORRED    = '\33[31m'
 COLOREND    = '\033[0m'
-
-
 
 
 
@@ -42,7 +31,7 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
     plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=12) 
 
     ####
-    min_f, max_f, step = 0.0, 60.0, 5.0    # <---
+    min_f, max_f, step = 0.0, 60.0, 5.0                 # <---
 
     #min_f, max_f, step = 35.0, 45.0, 0.5
     #plt.ylim( bottom = -1e-13, top = 1.5*1e-11  )
@@ -67,21 +56,19 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
 
 
 
-# CHOOSE PARTICIPANT AND CALCULATION INDEX:
-pNr = 2                         # <---            
-durchgang = "2"                  # <---      
 
+########################
+pNr, durchgang = 2, "2"       # <---
+
+index = 0                   # <---
+########################
 
 
 pathAllResultsPSD  = f"data\\results\\allResultsPSD_participant{pNr}_mainExp{durchgang}.pkl"
 allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
-AllResults.showAllResults( allResultsPSD )         # <--- 
+#AllResults.showAllResults( allResultsPSD )         # <--- 
                                                        
-index = 0 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
-###########################################
-
-
 
 
 
@@ -100,19 +87,13 @@ if( len( os.listdir(folderName) ) > 0 ):
             break
     
 
-
-
 sfreq               = allResultsPSD[index]["sfreq"]
 recordingElectrodes = allResultsPSD[index]["recordingElectrodes"]
-
-
 
 
 freqCombConds = list()
 for key in allResultsPSD[index]["voltDict"]:
     freqCombConds.append(key)
-#print(freqCombConds)       # freqCombConds = ["ABC_left", "CBA_middle", ...]
-
 
 
 psdsDict  = dict()

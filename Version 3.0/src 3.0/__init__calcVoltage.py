@@ -6,25 +6,23 @@ import mne
 import json
 from typing import List
 
-
 from Roh import Roh
 from RohBlock import RohBlock
 from BlockParams import BlockParams
 from Paths import Paths
 from AllResults import AllResults
 
-COLORRED    = '\33[31m'
+COLORGREEN  = '\033[0;32m'
 COLORCYAN   = '\033[36m'
 COLORYELLOW = '\033[33m'
-COLORGREEN  = "\033[0;32m"
 COLORPURPLE = '\033[35m'
+COLORRED    = '\33[31m'
 COLOREND    = '\033[0m'
 
 
 
 
 
-       
 # CHOOSE PARTICIPANT:
 pNr = 2                  # <---            
 durchgang = "2"          # <---      
