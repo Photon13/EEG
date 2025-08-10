@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import mne
-import typing
+from typing import List
 
 from Ereignisse import Ereignisse
 
@@ -24,6 +24,7 @@ class Plots:
             first_samp = rawFull.first_samp
         )
         inp = input("Continue? [any]: ")
+
 
 
     @staticmethod
@@ -49,6 +50,7 @@ class Plots:
         inp = input("any ")
 
 
+
     @staticmethod # self-made
     def plot_PSD(psds, freqs):
     
@@ -71,6 +73,7 @@ class Plots:
 
         plt.show()
         inp = input("any ")
+
 
 
     @staticmethod # self_made
@@ -101,3 +104,36 @@ class Plots:
         inp = input("any ")
 
 
+    @staticmethod
+    def boxplot( data : dict, title : str, participantNr : int, ylabel : str, xlabel : str, axhline : float | None ) -> None:
+
+        labels = data.keys()
+        oldTicks = list( range(1, len(labels)+1 ) )
+
+        boxes = []
+        for label in labels:
+            boxes.append( data[label] )
+
+        plt.boxplot( 
+            boxes,
+            showmeans    = True,
+            patch_artist = True,
+            boxprops     = { "facecolor":"lightgrey" },
+            medianprops  = { "color":"black" }, 
+            meanprops    = { "marker":"s", "markerfacecolor":"white", "markeredgecolor":"black" },
+            flierprops   = { "marker":"x" } #Outliers    
+        )
+        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=13, fontweight='bold', pad=10 )
+        #plt.rcParams["figure.figsize"] = (15,10)
+        #plt.text( 2.1, 4.35, f"Participant {participantNr}", fontsize=12 )
+
+        plt.ylabel( ylabel, fontsize=14 )
+        plt.xlabel( xlabel, fontsize=12 )
+        plt.xticks( oldTicks, labels )
+        if( axhline != None ):
+            plt.axhline(y = axhline, color = "grey", linestyle = ":")
+        
+        plt.tight_layout(pad=1)
+        plt.show()
+        inp = input("any ")
+        plt.close()

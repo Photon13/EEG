@@ -2,11 +2,15 @@ import re
 import numpy as np
 from scipy import stats
 from typing import List
-
+from itertools import combinations
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 plt.ion()
+import copy
+
+from Statistics import Statistics
+from Plots import Plots
 
 COLORGREEN  = '\033[0;32m'
 COLORCYAN   = '\033[36m'
@@ -43,7 +47,7 @@ class Target_VS_NonTarget:
 
 
     @staticmethod
-    def get_psdsABC_perFreqCombCond(psdsABC_perFreqCombCond : dict) -> dict:
+    def get_psdsLMR_perFreqCombCond( psdsABC_perFreqCombCond : dict ) -> dict:
 
         psdsLMR__perFreqCombCond = dict()
         for freqCombCond in psdsABC_perFreqCombCond:
@@ -72,22 +76,47 @@ class Target_VS_NonTarget:
             targets    = np.array( [psdsLMR[0],psdsLMR[2]] )
             nonTargets = np.array( [psdsLMR[1]] )
 
-        psds_target    : float = np.mean( targets )
-        psds_nonTarget : float = np.mean( nonTargets )
-        return [psds_target, psds_nonTarget]
+        psds_target    = float( np.mean( targets ) )
+        psds_nonTarget = float( np.mean( nonTargets ) )
+        quotient       = float( np.divide( psds_target, psds_nonTarget ) )
+        return [psds_target, psds_nonTarget, quotient]
     
 
 
     @staticmethod
-    def get_psdsTnT_perFreqCombCond(psdsLMR__perFreqCombCond : dict) -> dict:
+    def get_psdsTnT_perFreqCombCond( psdsLMR_perFreqCombCond : dict ) -> dict:
 
-        psdsTnT__perFreqCombCond = dict()
-        for freqCombCond in psdsLMR__perFreqCombCond:
-            psds_LMR = psdsLMR__perFreqCombCond[freqCombCond]
-            psdsTnT__perFreqCombCond[freqCombCond] = list( Target_VS_NonTarget.calc_psdTarget_nonTarget(freqCombCond, psds_LMR) )
+        psdsTnT_perFreqCombCond = dict()
+        for freqCombCond in psdsLMR_perFreqCombCond:
+            psds_LMR : List[float] = psdsLMR_perFreqCombCond[freqCombCond]
+            psdsTnT_perFreqCombCond[freqCombCond] = list( Target_VS_NonTarget.calc_psdTarget_nonTarget(freqCombCond, psds_LMR) )
 
-        return psdsTnT__perFreqCombCond
+        return psdsTnT_perFreqCombCond
     
+
+    @staticmethod
+    def get_psdsLMR_perCond( psdsLMR_perFreqCombCond : dict )-> dict:
+
+        famLMR_dict = {
+            "famLeft" : [],
+            "famMiddle" : [],
+            "famRight" : []
+        }
+        psdsLMR_perCond = {
+            "left"   : copy.deepcopy(famLMR_dict),
+            "middle" : copy.deepcopy(famLMR_dict),
+            "right"  : copy.deepcopy(famLMR_dict),
+            "both"   : copy.deepcopy(famLMR_dict)
+        }
+        for freqCombCond in psdsLMR_perFreqCombCond:
+            cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] )
+
+            psdsLMR_perCond[cond]["famLeft"].append( psdsLMR_perFreqCombCond[freqCombCond][0] )
+            psdsLMR_perCond[cond]["famMiddle"].append( psdsLMR_perFreqCombCond[freqCombCond][1] )
+            psdsLMR_perCond[cond]["famRight"].append( psdsLMR_perFreqCombCond[freqCombCond][2] )
+        return psdsLMR_perCond
+
+
 
 
     @staticmethod
@@ -97,61 +126,155 @@ class Target_VS_NonTarget:
         for condition in ["left", "middle", "right", "both"]:
             psdsTnT_perCond[condition] = {
                 "psd_target"    : [],
-                "psd_nonTarget" : []
+                "psd_nonTarget" : [],
+                "quotient"      : []
             }
 
         for freqCombCond in psdsTnT_perFreqCombCond:
             cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] ) 
 
-            psd_target, psd_nonTarget = psdsTnT_perFreqCombCond[freqCombCond][0], psdsTnT_perFreqCombCond[freqCombCond][1]
+            psd_target, psd_nonTarget, quotient = psdsTnT_perFreqCombCond[freqCombCond][0], psdsTnT_perFreqCombCond[freqCombCond][1], psdsTnT_perFreqCombCond[freqCombCond][2]
             psdsTnT_perCond[cond]["psd_target"].append( psd_target ) 
-            psdsTnT_perCond[cond]["psd_nonTarget"].append( psd_nonTarget ) 
+            psdsTnT_perCond[cond]["psd_nonTarget"].append( psd_nonTarget )
+            psdsTnT_perCond[cond]["quotient"].append( quotient )
 
         return psdsTnT_perCond
 
 
 
+    #############################################################################################################################################################
+
     @staticmethod
-    def test_whether_target_nonTarget_sigDifferent( psdsTnT_perCond : dict )-> None:
-        for cond in psdsTnT_perCond:
-            print(COLORGREEN + f"\n{cond}" + COLOREND)
+    def testSigDifferent_famLMR_perCond( psdsLMR_perCond : dict ):
+        
+        for fam in ["famLeft", "famMiddle", "famRight"]:
+            print(COLORCYAN + f"\nTest sigDiff {fam} between conditions:" + COLOREND)
 
-            p_values_shapiro = list()
-            for psd_type in ["psd_target", "psd_nonTarget"]:
-                statistic, p_value_shapiro = stats.shapiro( psdsTnT_perCond[cond][psd_type] )
-                p_values_shapiro.append(p_value_shapiro)
-                print(f"Shapiro-Wilk: p_value {psd_type} = {p_value_shapiro}")
+            p_values_shapiro = []
+            for cond in ["left", "middle", "right", "both"]:
+                p_values_shapiro.append( Statistics.shapiroWilk( psdsLMR_perCond[cond][fam], f"{fam}" ) )
 
-            psd_target, psd_nonTarget = psdsTnT_perCond[cond]["psd_target"], psdsTnT_perCond[cond]["psd_nonTarget"]
-
+                
             if all( p_value > 0.05 for p_value in p_values_shapiro ):
-                statistics, p_value = stats.ttest_ind( psd_target, psd_nonTarget,  equal_var=False )
-                print(f"\nWelch's T-Test: target VS nonTarget: p_value = {p_value}")
-
+                method = "t-test"
             else:
-                statistics, p_value = stats.mannwhitneyu( psd_target, psd_nonTarget )
-                print(f"\nMann-Whitney_U: famA VS famB: p_value = {p_value}")
+                method = "mann-whitney-u"
+
+            data = {
+                "left"   : psdsLMR_perCond["left"][fam], 
+                "middle" : psdsLMR_perCond["middle"][fam],
+                "right"  : psdsLMR_perCond["right"][fam],
+                "both"   : psdsLMR_perCond["both"][fam]
+            }
+            Statistics.test_sigDifference( data, method )
 
 
-    @staticmethod
-    def get_allPsds_targetNonTarget( psdsTnT_perFreqCombCond : dict ) -> dict:
-        allPeaks = {
-            "target" : [],
-            "nonTarget" : [],
-        }
-        for freqCombCond in psdsTnT_perFreqCombCond:
-            allPeaks["target"].append( psdsTnT_perFreqCombCond[freqCombCond][0] )
-            allPeaks["nonTarget"].append( psdsTnT_perFreqCombCond[freqCombCond][1] )
-        return allPeaks
 
     @staticmethod
-    def boxplot_target_VS_nonTarget( psdsTnT_perCond : dict, participantNr : int):
+    def testSigDifferent_target_VS_nonTarget( psdsTnT_perCond : dict ) -> None:
+        print(COLORCYAN + "\nTest sigDiff target VS nonTarget:" + COLOREND)
 
         for cond in ["left", "middle", "right", "both"]:
-            psds_target, psds_nonTarget = psdsTnT_perCond[cond]["psd_target"], psdsTnT_perCond[cond]["psd_nonTarget"]
-            plt.boxplot( psds_target, psds_nonTarget )
-            plt.xticks([1, 2], ["target", "non_target"])
-            plt.title(f"PSD condition {cond}, participant{participantNr}", fontsize=14, fontweight='bold', pad=20 )
-            plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=12)
-            plt.show()
-            inp = input("any ")
+            print(COLORGREEN + f"\n{cond}" + COLOREND)
+
+            p_values_shapiro = []
+            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psd_target"], "psd_target" ) )
+            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psd_nonTarget"], "psd_nonTarget" ) )
+            
+            if all( p_value > 0.05 for p_value in p_values_shapiro ):
+                method = "t-test"
+            else:
+                method = "mann-whitney-u"
+
+            data = {
+                "psd_target"    : psdsTnT_perCond[cond]["psd_target"], 
+                "psd_nonTarget" : psdsTnT_perCond[cond]["psd_nonTarget"] 
+            }
+            Statistics.test_sigDifference( data, method )
+
+
+
+    @staticmethod
+    def testSigDifferent_quotient_VS_quotient( psdsTnT_perCond : dict )-> None:
+        print(COLORCYAN + "\nTest sigDiff quotient VS quotient:" + COLOREND)
+
+        p_values_shapiro = []
+        for cond in ["left", "middle", "right", "both"]:
+            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["quotient"], "quotient" ) )
+
+        if all( p_value > 0.05 for p_value in p_values_shapiro ):
+            method = "t-test"
+        else:
+            method = "mann-whitney-u"
+
+        data = {
+            "cond_left"   : psdsTnT_perCond["left"]["quotient"], 
+            "cond_middle" : psdsTnT_perCond["middle"]["quotient"],
+            "cond_right"  : psdsTnT_perCond["right"]["quotient"],
+            "cond_both"   : psdsTnT_perCond["both"]["quotient"]
+        }
+        Statistics.test_sigDifference( data, method )
+
+
+
+    #############################################################################################################################################################
+    
+    @staticmethod
+    def boxplot_quotient_VS_quotient( psdsTnT_perCond : dict, participantNr : int ):
+        data = {
+            "left" : psdsTnT_perCond["left"]["quotient"],
+            "middle" : psdsTnT_perCond["middle"]["quotient"],
+            "right" : psdsTnT_perCond["right"]["quotient"],
+            "both" : psdsTnT_perCond["both"]["quotient"]
+        }
+        Plots.boxplot( 
+            data          = data, 
+            title         = "Quotient", 
+            participantNr = participantNr, 
+            ylabel        = r"$\frac{PSD(target)}{PSD(nonTarget)}$", 
+            xlabel        = r"Target", 
+            axhline       = 1.0
+        )
+
+    @staticmethod
+    def boxplot_target_VS_nonTarget( psdsTnT_perCond : dict, participantNr : int ):
+        for cond in ["left", "middle", "right", "both"]:
+            data = {
+                "target"    : psdsTnT_perCond[cond]["psd_target"],
+                "nonTarget" : psdsTnT_perCond[cond]["psd_nonTarget"]
+            }
+            Plots.boxplot( 
+                data          = data, 
+                title         = "PSD(target) VS PSD(nonTarget)", 
+                participantNr = participantNr, 
+                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+                xlabel        = f"condition = {cond}", 
+                axhline       = None
+            )
+
+
+    @staticmethod
+    def boxplot_famLMR_perCond( psdsLMR_perCond : dict, participantNr : int ):
+        for fam in ["famLeft", "famMiddle", "famRight"]:
+            data = {
+                "left"   : psdsLMR_perCond["left"][fam],
+                "middle" : psdsLMR_perCond["middle"][fam],
+                "right"  : psdsLMR_perCond["right"][fam],
+                "both"   : psdsLMR_perCond["both"][fam]
+            }
+            Plots.boxplot( 
+                data          = data, 
+                title         = f"PSD({fam}) per condition", # ignores whether fam has been target or not => all data included
+                participantNr = participantNr, 
+                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+                xlabel        = f"Condition", 
+                axhline       = None
+            )
+
+
+
+
+
+
+
+
