@@ -161,10 +161,10 @@ class Target_VS_NonTarget:
                 method = "mann-whitney-u"
 
             data = {
-                "left"   : psdsLMR_perCond["left"][fam], 
-                "middle" : psdsLMR_perCond["middle"][fam],
-                "right"  : psdsLMR_perCond["right"][fam],
-                "both"   : psdsLMR_perCond["both"][fam]
+                "condition : \'target = left\'"   : psdsLMR_perCond["left"][fam], 
+                "condition : \'target = middle\'" : psdsLMR_perCond["middle"][fam],
+                "condition : \'target = right\'"  : psdsLMR_perCond["right"][fam],
+                "condition : \'target = both\'"   : psdsLMR_perCond["both"][fam]
             }
             Statistics.test_sigDifference( data, method )
 
@@ -215,8 +215,6 @@ class Target_VS_NonTarget:
         }
         Statistics.test_sigDifference( data, method )
 
-
-
     #############################################################################################################################################################
     
     @staticmethod
@@ -229,10 +227,10 @@ class Target_VS_NonTarget:
         }
         Plots.boxplot( 
             data          = data, 
-            title         = "Quotient", 
+            title         = "Quotient per condition", 
             participantNr = participantNr, 
             ylabel        = r"$\frac{PSD(target)}{PSD(nonTarget)}$", 
-            xlabel        = r"Target", 
+            xlabel        = r"condition", 
             axhline       = 1.0
         )
 
@@ -271,6 +269,9 @@ class Target_VS_NonTarget:
                 axhline       = None
             )
 
+
+
+       
 
 
 

@@ -35,7 +35,7 @@ print( Fam_VS_Fam.get_allPsdsPerFam(allResultsPSD, index ) )
 #####
 Fam_VS_Fam.test_whetherPeaksFamABC_sigDifferent(allResultsPSD, index)      # <----
 
-Fam_VS_Fam.plot_peaks_famABC(allResultsPSD, index)                         # <----
+Fam_VS_Fam.boxplot_famLMR_perCond( allResultsPSD, index, pNr )                         # <----
 ######
 
 

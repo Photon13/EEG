@@ -1,5 +1,5 @@
 from AllResults import AllResults
-from BlockParams import BlockParams
+from Plots import Plots
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -18,39 +18,7 @@ COLOREND    = '\033[0m'
 
 
 
-@staticmethod
-def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
-    plt.figure( figsize=(10, 5) )
-    plt.plot(   freqs, avg_pows, label="", color = "black" )
 
-    for fam in BlockParams.FAMS_ABC:
-        plt.axvline( fam, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 ) # Vertical lines
-
-    plt.title(f"{freqCombCond}", fontsize=14, fontweight='bold', pad=20 )
-    plt.xlabel("$f$ [$Hz$]", fontsize=12)
-    plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=12) 
-
-    ####
-    min_f, max_f, step = 0.0, 60.0, 5.0                 # <---
-
-    #min_f, max_f, step = 35.0, 45.0, 0.5
-    #plt.ylim( bottom = -1e-13, top = 1.5*1e-11  )
-    ####
-
-    plt.xlim( min_f, max_f )
-    plt.xticks( np.arange(min_f, max_f+1, step) )
-
-
-    plt.grid(True)
-    plt.tight_layout() #?
-    plt.show()
-
-    
-    fileName = folderName + f"\\psd_{freqCombCond}_participant{pNr}.png"
-
-    #plt.savefig(fname = fileName)   # <---
-    plt.show()                     
-    inp = input("any ")
 
 
 
@@ -60,7 +28,7 @@ def plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr):
 ########################
 pNr, durchgang = 2, "2"       # <---
 
-index = 0                   # <---
+index = 1                   # <---
 ########################
 
 
@@ -101,4 +69,12 @@ freqsDict = dict()
 for freqCombCond in freqCombConds:
     avg_pows = allResultsPSD[index]["psdsDict"][freqCombCond]
     freqs    = allResultsPSD[index]["freqsDict"][freqCombCond]
-    plot_PSD(avg_pows, freqs, freqCombCond, folderName, pNr)
+    Plots.plot_PSD(
+        avg_pows, 
+        freqs, 
+        freqCombCond, 
+        folderName, 
+        pNr, 
+        close_up = True,      # <---
+        save = True       # <---
+    ) 

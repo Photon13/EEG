@@ -63,17 +63,16 @@ psdsTnT_perCond = Target_VS_NonTarget.get_psdsTnT_perCond(psdsTnT_perFreqCombCon
 
 
 
-#Target_VS_NonTarget.testSigDifferent_famLMR_perCond( psdsLMR_perCond )
-#Target_VS_NonTarget.testSigDifferent_target_VS_nonTarget( psdsTnT_perCond )
+Target_VS_NonTarget.testSigDifferent_famLMR_perCond( psdsLMR_perCond )
+Target_VS_NonTarget.testSigDifferent_target_VS_nonTarget( psdsTnT_perCond )
 Target_VS_NonTarget.testSigDifferent_quotient_VS_quotient( psdsTnT_perCond )
 
 
 
-
-
-#Target_VS_NonTarget.boxplot_target_VS_nonTarget( psdsTnT_perCond, pNr )
-#Target_VS_NonTarget.boxplot_quotient_VS_quotient( psdsTnT_perCond, pNr )
 #Target_VS_NonTarget.boxplot_famLMR_perCond( psdsLMR_perCond, pNr)
+#Target_VS_NonTarget.boxplot_target_VS_nonTarget( psdsTnT_perCond, pNr )
+Target_VS_NonTarget.boxplot_quotient_VS_quotient( psdsTnT_perCond, pNr )
+
 
 
 

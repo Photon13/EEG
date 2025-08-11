@@ -1,5 +1,6 @@
 from F_Test import F_Test
 from BlockParams import BlockParams
+from Plots import Plots
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -10,6 +11,7 @@ from itertools import combinations
 from scipy import stats
 from typing import List
 import numpy as np
+import copy
 import re
 
 COLORGREEN  = '\033[0;32m'
@@ -45,6 +47,30 @@ class Fam_VS_Fam:
                 psdsABC_perFreqCombCond[freqCombCond][i] = psd_fam
 
         return psdsABC_perFreqCombCond
+    
+
+
+    @staticmethod
+    def get_psdsABC_perCond( psdsABC_perFreqCombCond : dict )-> dict:
+
+        famABC_dict = {
+            "famA" : [],
+            "famB" : [],
+            "famC" : []
+        }
+        psdsABC_perCond = {
+            "left"   : copy.deepcopy(famABC_dict),
+            "middle" : copy.deepcopy(famABC_dict),
+            "right"  : copy.deepcopy(famABC_dict),
+            "both"   : copy.deepcopy(famABC_dict)
+        }
+        for freqCombCond in psdsABC_perFreqCombCond:
+            cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] )
+
+            psdsABC_perCond[cond]["famA"].append( psdsABC_perFreqCombCond[freqCombCond][0] )
+            psdsABC_perCond[cond]["famB"].append( psdsABC_perFreqCombCond[freqCombCond][1] )
+            psdsABC_perCond[cond]["famC"].append( psdsABC_perFreqCombCond[freqCombCond][2] )
+        return psdsABC_perCond
 
 
 
@@ -94,16 +120,24 @@ class Fam_VS_Fam:
 
 
     @staticmethod
-    def plot_peaks_famABC(allResultsPSD : List[dict], index : int):
+    def boxplot_famLMR_perCond( allResultsPSD : dict, index : int, participantNr : int ):
+
         allPeaks = Fam_VS_Fam.get_allPsdsPerFam(allResultsPSD, index)
-        peaks_famABC = [allPeaks["famA"], allPeaks["famB"], allPeaks["famC"]]
-        participantNr = str(re.findall( r"\d+", allResultsPSD[index]["file_id"] )[0])
-        plt.boxplot(peaks_famABC)
-        plt.xticks([1, 2, 3], ["famA", "famB", "famC"])
-        plt.title(f"PSD per fam, participant{participantNr}", fontsize=14, fontweight='bold', pad=20 )
-        plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=12)
-        plt.show()
-        inp = input("any ")
+
+        data = {
+            f"famA\n({BlockParams.FAM_A} Hz)"  : allPeaks["famA"],
+            f"famB\n({BlockParams.FAM_B} Hz)"  : allPeaks["famB"],
+            f"famC\n({BlockParams.FAM_C} Hz)"  : allPeaks["famC"],
+
+        }
+        Plots.boxplot( 
+            data          = data, 
+            title         = f"PSD per fam", # ignores whether fam has been target or not => all data included
+            participantNr = participantNr, 
+            ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+            xlabel        = f"", 
+            axhline       = None
+        )
 
 
   

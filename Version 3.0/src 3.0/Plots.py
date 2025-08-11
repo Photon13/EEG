@@ -2,8 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import mne
 from typing import List
+import seaborn as sns
 
 from Ereignisse import Ereignisse
+from BlockParams import BlockParams
 
 COLORRED    = '\33[31m'
 COLORCYAN = '\033[36m'
@@ -51,57 +53,42 @@ class Plots:
 
 
 
-    @staticmethod # self-made
-    def plot_PSD(psds, freqs):
-    
-        fig,ax = plt.subplots( nrows=1 )
+    @staticmethod
+    def plot_PSD( avg_pows, freqs, freqCombCond, folderName, pNr, close_up : bool, save : bool ):
+        plt.figure( figsize=(10, 5) )
+        plt.plot(   freqs, avg_pows, label="", color = "black" )
 
-        plt.title("PSD spectrum", fontsize=20)
-        plt.xlabel("Frequency [Hz]", fontsize=16)
-        plt.ylabel("Power Spectral Density [uV^2/Hz?]", fontsize=16)
+        for fam in BlockParams.FAMS_ABC:
+            plt.axvline( fam, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 ) # Vertical lines
 
-        # FULL VIEW:
-        ax.set( xlim=(0, 60),   xticks=np.arange(start=0, stop=60, step=1.0)  )
+        plt.title(f"{freqCombCond}", fontsize=16, fontweight='bold', pad=20 )
+        plt.xlabel("$f$ [$Hz$]", fontsize=14)
+        plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=14) 
 
-        # DETAILED VIEW OF FREQ_RANGE:
-        #ax.set( xlim=(30, 55),   xticks=np.arange(start=30, stop=55, step=0.5)  )
-        #plt.xticks(fontsize = 7)
 
-        ax.plot(freqs, psds)
-        ax.grid(which='minor', alpha=0.2)
-        ax.grid(which='major', alpha=0.5)
+        if( close_up == False ):
+            min_f, max_f, step = 0.0, 60.0, 5.0
 
+        elif( close_up == True ):
+            min_f, max_f, step = 35.0, 45.0, 1.0
+            plt.ylim( bottom = -1e-13, top = 1.5*1e-11  )
+
+
+        plt.xlim( min_f, max_f )
+        plt.xticks( np.arange(min_f, max_f+1, step), fontsize=12 )
+        plt.yticks(fontsize=14)
+
+        #plt.grid(True)
+        plt.tight_layout() 
         plt.show()
-        inp = input("any ")
 
+        if( save == True ):
+            fileName = folderName + f"\\psd_{freqCombCond}_participant{pNr}.png"
+            plt.savefig(fname = fileName)
+        elif( save == False ):
+            plt.show()                     
+            inp = input("any ")
 
-
-    @staticmethod # self_made
-    def plot_SNR(snr, freqs):
-
-        fig,ax = plt.subplots( nrows=1 )
-
-        x = freqs
-        y = snr[0]
-        #y = 10*np.log10(y)
-
-        plt.title("Signal-to-Noise Ratio", fontsize=20)
-        plt.xlabel("Frequency [Hz]", fontsize=16)
-        plt.ylabel("SNR", fontsize=16)
-        #plt.ylabel("SNR [dB]", fontsize=16)
-
-        ax.set(xlim=(0, 60), 
-            xticks=np.arange(start=0, stop=60, step=2),
-            #ylim=(0, 8), 
-            #yticks=np.arange(1, 8)
-        )
-        ax.plot(x,y)
-
-        ax.grid(which='minor', alpha=0.2)
-        ax.grid(which='major', alpha=0.5)
-
-        plt.show()
-        inp = input("any ")
 
 
     @staticmethod
@@ -123,13 +110,14 @@ class Plots:
             meanprops    = { "marker":"s", "markerfacecolor":"white", "markeredgecolor":"black" },
             flierprops   = { "marker":"x" } #Outliers    
         )
-        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=13, fontweight='bold', pad=10 )
+        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=16, fontweight='bold', pad=10 )
         #plt.rcParams["figure.figsize"] = (15,10)
         #plt.text( 2.1, 4.35, f"Participant {participantNr}", fontsize=12 )
 
         plt.ylabel( ylabel, fontsize=14 )
-        plt.xlabel( xlabel, fontsize=12 )
-        plt.xticks( oldTicks, labels )
+        plt.xlabel( xlabel, fontsize=14 )
+        plt.xticks( oldTicks, labels, fontsize = 14 )
+        plt.yticks( fontsize = 14)
         if( axhline != None ):
             plt.axhline(y = axhline, color = "grey", linestyle = ":")
         
@@ -137,3 +125,4 @@ class Plots:
         plt.show()
         inp = input("any ")
         plt.close()
+

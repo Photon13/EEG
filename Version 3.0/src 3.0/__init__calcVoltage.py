@@ -81,16 +81,16 @@ rawFull = rawFull.notch_filter( freqs = notch_freq, notch_widths = notch_width )
 rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 ###########################
 # INDEPENDENT COMPONENT ANALYSIS:
-n_componentsICA = None #0.999       # <---
-methodICA = None #'fastica'         # <---
-seed = None #99                      # <---
+n_componentsICA = 0.999       # <---
+methodICA = 'fastica'         # <---
+seed = 99                      # <---
 
-"""
+
 ica = mne.preprocessing.ICA( n_components = n_componentsICA, method = methodICA, random_state=seed )
 ica.fit(rawFull)  # bad segments that were marked in the EEG signal will be excluded.
-ica.plot_sources(rawFull)
+#ica.plot_sources(rawFull)
 ica.apply(rawFull)
-"""
+
 ###########################
 # RE-REFERENCING:
 recordingElectrodes = ["25"]               # <---
