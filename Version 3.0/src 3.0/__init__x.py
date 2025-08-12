@@ -54,7 +54,7 @@ print(COLORRED + f"{allPeaksTnT}" + COLOREND)
 
 
 
-#StatisticsPeaks.test_famABC_sigHigher_thanNoise( allResultsPSD, index )
+StatisticsPeaks.test_famABC_sigHigher_thanNoise( allResultsPSD, index )
 #StatisticsPeaks.testSigDifference_famABC_perCond( psdsABC_perCond )
 #StatisticsPeaks.testSigDifference_famLMR_perCond( psdsLMR_perCond )
 #

@@ -28,7 +28,7 @@ def scipyPowerSpectrum(voltage : np.ndarray, sfreq : int ):
     freqs, pows = scipy.signal.periodogram(
         x       = voltage,
         fs      = sfreq,
-        nfft    = 16384, #131072,
+        nfft    = 131072, #16384,
         scaling = "density" #
     )
     return pows, freqs
