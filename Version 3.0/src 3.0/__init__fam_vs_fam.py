@@ -21,7 +21,7 @@ COLOREND    = '\033[0m'
 ########################
 pNr, durchgang = 2, "2"           # <---
 
-index = 0                     # <---
+index = 1                     # <---
 ########################
 
 fams_ABC = BlockParams.FAMS_ABC
@@ -30,13 +30,14 @@ pathAllResultsPSD  : str        = f"data\\results\\allResultsPSD_participant{pNr
 allResultsPSD      : List[dict] = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
 
-print( Fam_VS_Fam.get_allPsdsPerFam(allResultsPSD, index ) ) 
+print( Fam_VS_Fam.get_allPsdsABC_perFam(allResultsPSD, index ) ) 
 
 #####
 Fam_VS_Fam.test_whetherPeaksFamABC_sigDifferent(allResultsPSD, index)      # <----
-
-Fam_VS_Fam.boxplot_famLMR_perCond( allResultsPSD, index, pNr )                         # <----
+Fam_VS_Fam.boxplot_famABC_perCond( allResultsPSD, index, pNr )                         # <----
 ######
+
+
 
 
 

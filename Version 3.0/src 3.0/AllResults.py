@@ -25,10 +25,12 @@ class AllResults:
             print( COLORRED + "allResults already exists on given path! Creation of new List aborted. " + COLOREND )
 
 
+
     @staticmethod
     def saveAsPickle_allResults( allResults : List[dict], path : str ):
         with open(path, "wb") as f:
             pickle.dump(allResults, f)
+
 
 
     @staticmethod
@@ -37,11 +39,15 @@ class AllResults:
             allResults = pickle.load(f)
         return allResults
 
+
+
     @staticmethod
     def deleteEntry_atGivenIndex(allResults : List, index : int):
         del allResults[index]
         return allResults
     
+
+
     @staticmethod
     def showAllResults( input : str | List[dict] ):
         if(type(input) == str):
@@ -54,63 +60,11 @@ class AllResults:
                 print(COLORCYAN + f"{key} : {allResults[i][key]}" + COLOREND + "\n")
 
 
-    def getIndices_ofEntriesMatchingCriteria( allResults : List[dict], criteria : dict ): #correct?
-        idx_propEntr : List[int] = list( )
-
-        for m in range( len(allResults) ):
-            count = 0
-            for key in criteria:
-                if( criteria[key] == allResults[m][key]):
-                    count += 1
-                if( count == len(criteria) ):
-                    idx_propEntr.append(m)
-
-        if( len( idx_propEntr ) == 0 ):
-            print(COLORRED + "No entry in allResults found matching given ccriteria. " + COLOREND)
-            sys.exit()
-
-        print("Indices of proper entries: " + COLORGREEN + f"{idx_propEntr}" + COLOREND)
-        return idx_propEntr
 
 
 
-class AllResultsVolt:
-    """ allResultsVolt : List[dict]
-                              
-        file_id             : str                                = \"participant<>_mainExp<>.vhdr\",                                     
-        freqCombCond        : str                                = \"\<fams LMR\>_\<target\>\" #z.B. ABC_left
 
-        recordingElectrodes : List[str]                          = [ \'\<\>\' , \'\<\>\' ]
-        referenceElectrodes : List[str] | None | str             = [ \'\<\>\' , \'\<\>\' ] | "average" | None
 
-        filterParams        : tuple[str | int | None]            = (l_freq, h_freq, notch_freq, notch_width)
-        ICAParams           : tuple[float | str | int] | None    = (n_componentsICA, methodICA, seed)
-
-        voltageUnit         : str                                = e.g. "V"
-        voltageTimes        : tuple[np.ndarray | None]           = (voltage, times)
-
-        # order of recordingElectrodes is perserved inside of 
-        # voltage, times, psds, psds_dB and freqs
-    """
-
-class AllResultsPower: 
-    """ allResultsVolt : List[dict]
-                              
-        file_id             : str                                = \"participant<>_mainExp<>.vhdr\",                                     
-        freqCombCond        : str                                = \"\<fams LMR\>_\<target\>\" #z.B. ABC_left
-
-        recordingElectrodes : List[str]                          = [ \'\<\>\' , \'\<\>\' ]
-        referenceElectrodes : List[str] | None | str             = [ \'\<\>\' , \'\<\>\' ] | "average" | None
-
-        filterParams        : tuple[str | int | None]            = (l_freq, h_freq, notch_freq, notch_width)
-        ICAParams           : tuple[float | str | int] | None    = (n_componentsICA, methodICA, seed)
-
-        scaling             : str                                = "density" (V^2/Hz) | "spectrum" (V^2)
-        psds_freqs          : tuple[np.ndarray]                  = (psds, psds_dB, freqs)
-
-        # order of recordingElectrodes is perserved inside of 
-        # voltage, times, psds, psds_dB and freqs
-    """   
 
 
 

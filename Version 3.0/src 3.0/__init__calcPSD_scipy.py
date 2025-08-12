@@ -28,7 +28,7 @@ def scipyPowerSpectrum(voltage : np.ndarray, sfreq : int ):
     freqs, pows = scipy.signal.periodogram(
         x       = voltage,
         fs      = sfreq,
-        nfft    = 131072,
+        nfft    = 16384, #131072,
         scaling = "density" #
     )
     return pows, freqs
@@ -67,7 +67,7 @@ allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
 
 AllResults.showAllResults( allResultsVolt )                                                          # <--- 
-index = 1 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
+index = 0 # index of calculation    # e.g. allResultsVolt = [ [...] [...] ] for two calculations     # <--- 
 
 
 
@@ -76,28 +76,40 @@ sfreq               = allResultsVolt[index]["sfreq"]
 recordingElectrodes = allResultsVolt[index]["recordingElectrodes"]
 
 
-freqCombConds = list()
+poss_freqCombConds = list()
 for key in allResultsVolt[index]["voltDict"]:
-    freqCombConds.append(key)
+    poss_freqCombConds.append(key)
 #print(freqCombConds)       # freqCombConds = ["ABC_left", "CBA_middle", ...]
 
 psdsDict  = dict()
 freqsDict = dict()
-for freqCombCond in freqCombConds:
-    voltages = allResultsVolt[index]["voltDict"][freqCombCond]
+for freqCombCond in poss_freqCombConds:
+    psdsDict[freqCombCond] = {
+        "trial1" : None,
+        "trial2" : None,
+        "trial3" : None
+    }
+    freqsDict[freqCombCond] = {
+        "trial1" : None,
+        "trial2" : None,
+        "trial3" : None
+    }
+    for trial in allResultsVolt[index]["voltDict"][freqCombCond]:
+        voltages = allResultsVolt[index]["voltDict"][freqCombCond][trial]
+        print(COLORGREEN + f"{allResultsVolt[index]["voltDict"]}" + COLOREND)
 
-    # SCI-PY:
-    pow_list = list()
-    for ch_i in range( len(recordingElectrodes) ):
-        pows, freqs  = scipyPowerSpectrum( voltages[ch_i], sfreq ) # e.g. voltages = [ [U1 U2 ... Un] [U1 U2 ... Un] ] for two recording electrodes
-        print(freqs)
-        pow_list.append(pows)
-    avg_pows      = calcAverage( pow_list ) #does nothing if 1-dim array or list with 1 entry is given
-    psdsDict[f"{freqCombCond}"]  = avg_pows
-    freqsDict[f"{freqCombCond}"] = freqs
+        # SCI-PY:
+        pow_list = list()
+        for ch_i in range( len(recordingElectrodes) ):
+            pows, freqs  = scipyPowerSpectrum( voltages[ch_i], sfreq ) # e.g. voltages = [ [U1 U2 ... Un] [U1 U2 ... Un] ] for two recording electrodes
+            print(freqs)
+            pow_list.append(pows)
+        avg_pows      = calcAverage( pow_list ) #does nothing if 1-dim array or list with 1 entry is given
+        psdsDict[f"{freqCombCond}"][trial]  = avg_pows
+        freqsDict[f"{freqCombCond}"][trial] = freqs
 
 
-# TAKE ENTRY FROM allResultsVolt AND 'APPEND' PSDS AND FREQS:
+# TAKE ENTRY FROM allResultsVolt AND 'APPEND' PSD DICT AND FREQ DICT:
 entry = copy.deepcopy(allResultsVolt[index])
 entry["psdsDict"]  = psdsDict
 entry["freqsDict"] = freqsDict

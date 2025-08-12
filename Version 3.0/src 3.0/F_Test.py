@@ -106,11 +106,7 @@ class F_Test:
 
 
     @staticmethod
-    def get_peakHight( allResultsPSD : List[dict], index : int, fam : int, freqCombCond : str, freqs : np.ndarray, psds : np.ndarray ) -> float:
-
-        psds  = allResultsPSD[index]["psdsDict"][freqCombCond]
-        freqs = allResultsPSD[index]["freqsDict"][freqCombCond]
-
+    def get_peakHight( psds : np.ndarray, freqs : np.ndarray, fam : float ) -> float:
         i_largestVal    = F_Test.get_indexLargestValue_nextFam(fam, F_Test.MAX_DIST_FROM_FAM, freqs, psds)
         return float(psds[i_largestVal])
     

@@ -31,18 +31,20 @@ class RohBlock:
 
     @staticmethod #korrekt
     def get_rawsPerFreqCombCond( rawFull : mne.io.Raw, pathVMRK : str , blockDict : dict, blockLength : int ):
-        raws_perFreqCombCond = dict()
+        raws_perFreqCombCond = list()
+        freqCombCond_list    = list()
+        trial_list           = list()
 
-        for freqComb in ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"]:
-            for condition in ["left", "middle", "right", "both"]:
-                raws_perFreqCombCond[ f"{freqComb}_{condition}"] = list() 
+        for blockNr in range(72):
+            freqComb  = blockDict[f"block{blockNr}"]["freqComb"]
+            condition = blockDict[f"block{blockNr}"]["condition"]
+            trial     = blockDict[f"block{blockNr}"]["trial"]
+                     
+            rawBlock = RohBlock.erzeuge_gecroppteRaw_fuerBlock(rawFull, pathVMRK, blockLength, blockNr )
+            raws_perFreqCombCond.append(rawBlock)
+            freqCombCond_list.append(f"{freqComb}_{condition}")
+            trial_list.append(f"trial{trial}")
 
-                for blockNr in range(72):
-                    if( blockDict[f"block{blockNr}"]["freqComb"] == freqComb ):
-                        if( blockDict[f"block{blockNr}"]["condition"] == condition ):
-                            rawBlock = RohBlock.erzeuge_gecroppteRaw_fuerBlock(rawFull, pathVMRK, blockLength, blockNr )
-                            raws_perFreqCombCond[ f"{freqComb}_{condition}"].append( rawBlock )
+            print("freqCombCond " + COLORYELLOW + f"{freqComb}_{condition} " + COLORRED + f"   block{blockNr}" + COLOREND)
 
-                            print("freqCombCond " + COLORYELLOW + f"{freqComb}_{condition} " + COLORRED + f"   block{blockNr}" + COLOREND)
-
-        return raws_perFreqCombCond
+        return raws_perFreqCombCond, freqCombCond_list, trial_list

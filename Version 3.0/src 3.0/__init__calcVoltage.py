@@ -81,16 +81,16 @@ rawFull = rawFull.notch_filter( freqs = notch_freq, notch_widths = notch_width )
 rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 ###########################
 # INDEPENDENT COMPONENT ANALYSIS:
-n_componentsICA = 0.999       # <---
-methodICA = 'fastica'         # <---
-seed = 99                      # <---
+n_componentsICA = None #0.999       # <---
+methodICA = None #'fastica'         # <---
+seed = None #99                      # <---
 
-
+"""
 ica = mne.preprocessing.ICA( n_components = n_componentsICA, method = methodICA, random_state=seed )
 ica.fit(rawFull)  # bad segments that were marked in the EEG signal will be excluded.
 #ica.plot_sources(rawFull)
 ica.apply(rawFull)
-
+"""
 ###########################
 # RE-REFERENCING:
 recordingElectrodes = ["25"]               # <---
@@ -106,39 +106,59 @@ rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes, ve
 
 
 
-raws_perFreqCombCond = RohBlock.get_rawsPerFreqCombCond( rawFull, pathVMRK, blockDict, blockLength )
-freqCombConds_list = list()
+raws_perFreqCombCond, freqCombCond_list, trial_list = RohBlock.get_rawsPerFreqCombCond( rawFull, pathVMRK, blockDict, blockLength )
 voltages_list      = list()
 times_list         = list()
 
-for freqCombCond in raws_perFreqCombCond: #key = freqCombCond
-    rawConcat = mne.concatenate_raws( raws_perFreqCombCond[freqCombCond] )
-
-    #print("freqCombCond" + COLORCYAN + f"{freqCombCond}" + COLOREND)     # <---
-    #rawConcat.plot()
-    #inp = input("any ")  
+for rawBlock in raws_perFreqCombCond:
 
     voltageUnit = "V"
     voltage, times = mne.io.Raw.get_data(
-            rawConcat,
+            rawBlock,
             picks         = recordingElectrodes, 
             return_times  = True, 
             units         = voltageUnit,
             verbose       = True
     )
     
-    freqCombConds_list.append( freqCombCond )
     voltages_list.append( voltage )
     times_list.append( times )
 
 
 
 
-voltDict = dict()
+
+
+poss_freqCombConds = []
+for freqCombCond in freqCombCond_list:
+    if freqCombCond not in poss_freqCombConds:
+        poss_freqCombConds.append(freqCombCond)
+
+voltDict  = dict()
 timesDict = dict()
-for j in range( len(freqCombConds_list) ):
-    voltDict[f"{freqCombConds_list[j]}"]  = voltages_list[j]
-    timesDict[f"{freqCombConds_list[j]}"] = times_list[j] 
+
+for freqCombCond in poss_freqCombConds:
+    voltDict[freqCombCond] = {
+        "trial1" : None,
+        "trial2" : None,
+        "trial3" : None
+    }
+    timesDict[freqCombCond] = {
+        "trial1" : None,
+        "trial2" : None,
+        "trial3" : None
+    }
+
+
+
+
+
+for j in range( len(raws_perFreqCombCond) ):
+    voltDict[f"{freqCombCond_list[j]}"][f"{trial_list[j]}"]  = voltages_list[j]
+    timesDict[f"{freqCombCond_list[j]}"][f"{trial_list[j]}"] = times_list[j] 
+
+
+
 
 
 
@@ -150,7 +170,7 @@ paramDict = {
     "referenceElectrodes" : referenceElectrodes,
     "badElectrodes"       : bad_channels,      
 
-    "sfreq"               : rawConcat.info["sfreq"],
+    "sfreq"               : rawFull.info["sfreq"],
 
     "filterParams"        : (l_freq, h_freq, notch_freq, notch_width),
     "ICAParams"           : (n_componentsICA, methodICA, seed),
@@ -161,7 +181,9 @@ paramDict = {
     "timesDict"           : timesDict
 }
     
-print( COLORPURPLE + f"{paramDict}" + COLOREND )
+
+
+
 
 pathAllResults = f"data\\results\\allResultsVolt_participant{pNr}_mainExp{durchgang}.pkl"
 AllResults.create_newAllResultsList( pathAllResults )

@@ -1,5 +1,6 @@
 from F_Test import F_Test
 from BlockParams import BlockParams
+from Target_VS_NonTarget import Target_VS_NonTarget
 from Plots import Plots
 
 import matplotlib
@@ -27,24 +28,31 @@ COLOREND    = '\033[0m'
 class Fam_VS_Fam:
 
     @staticmethod
-    def get_peakHight(allResultsPSD : List[dict], index : int, fam : int, freqCombCond : str, freqs : np.ndarray, psds : np.ndarray):
-        return F_Test.get_peakHight(allResultsPSD, index, fam, freqCombCond, freqs, psds)
+    def get_peakHight(psds : np.ndarray, freqs : np.ndarray, fam : float):
+        return F_Test.get_peakHight( psds, freqs, fam )
     
 
 
     @staticmethod
     def get_psdsABC_perFreqCombCond(allResultsPSD : List[dict], index : int ) -> dict:
-        """ Output: {'ABC_left': [psd(famA), psd(famB), psd(famC)], 'ABC_middle': [psd(famA), psd(famB), psd(famC)] ... }"""
+        """ Output: {'ABC_left': {'famA': [...], 'famB' : [...], 'famC' : [...]}, 'ABC_middle': {...} ... }"""
     
         psdsABC_perFreqCombCond = dict()
         for freqCombCond in allResultsPSD[index]["psdsDict"]:
-            psds  = allResultsPSD[index]["psdsDict"][freqCombCond]
-            freqs = allResultsPSD[index]["freqsDict"][freqCombCond]
+            psdsABC_perFreqCombCond[freqCombCond] = {
+                "famA" : [],
+                "famB" : [],
+                "famC" : []
+            }
+        for freqCombCond in allResultsPSD[index]["psdsDict"]:
+            for trial in ["trial1", "trial2", "trial3"]:
+                psds  = allResultsPSD[index]["psdsDict"][freqCombCond][trial]
+                freqs = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
 
-            psdsABC_perFreqCombCond[freqCombCond] = [0.0, 0.0, 0.0]
-            for i in range( 3 ):
-                psd_fam = Fam_VS_Fam.get_peakHight(allResultsPSD, index, BlockParams.FAMS_ABC[i], freqCombCond, freqs, psds)
-                psdsABC_perFreqCombCond[freqCombCond][i] = psd_fam
+                fams = ["famA", "famB", "famC"]
+                for i in range( len(fams) ):
+                    psd_fam = Fam_VS_Fam.get_peakHight( psds, freqs, BlockParams.FAMS_ABC[i] )
+                    psdsABC_perFreqCombCond[freqCombCond][fams[i]] = psd_fam
 
         return psdsABC_perFreqCombCond
     
@@ -67,15 +75,15 @@ class Fam_VS_Fam:
         for freqCombCond in psdsABC_perFreqCombCond:
             cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] )
 
-            psdsABC_perCond[cond]["famA"].append( psdsABC_perFreqCombCond[freqCombCond][0] )
-            psdsABC_perCond[cond]["famB"].append( psdsABC_perFreqCombCond[freqCombCond][1] )
-            psdsABC_perCond[cond]["famC"].append( psdsABC_perFreqCombCond[freqCombCond][2] )
+            psdsABC_perCond[cond]["famA"].append( psdsABC_perFreqCombCond[freqCombCond]["famA"] )
+            psdsABC_perCond[cond]["famB"].append( psdsABC_perFreqCombCond[freqCombCond]["famB"] )
+            psdsABC_perCond[cond]["famC"].append( psdsABC_perFreqCombCond[freqCombCond]["famC"] )
         return psdsABC_perCond
 
-
+#################################################################################################################################################################
 
     @staticmethod
-    def get_allPsdsPerFam( allResultsPSD : List[dict], index : int ) -> dict[List]:
+    def get_allPsdsABC_PerFam( allResultsPSD : List[dict], index : int ) -> dict[List]:
         psdsABC_perFreqCombCond = Fam_VS_Fam.get_psdsABC_perFreqCombCond(allResultsPSD, index)
 
         allPeaks = {
@@ -84,18 +92,36 @@ class Fam_VS_Fam:
             "famC" : []
         }
         for freqCombCond in psdsABC_perFreqCombCond:
-            allPeaks["famA"].append( psdsABC_perFreqCombCond[freqCombCond][0] )
-            allPeaks["famB"].append( psdsABC_perFreqCombCond[freqCombCond][1] )
-            allPeaks["famC"].append( psdsABC_perFreqCombCond[freqCombCond][2] )
+            allPeaks["famA"].append( psdsABC_perFreqCombCond[freqCombCond]["famA"] )
+            allPeaks["famB"].append( psdsABC_perFreqCombCond[freqCombCond]["famB"] )
+            allPeaks["famC"].append( psdsABC_perFreqCombCond[freqCombCond]["famC"] )
+
+        return allPeaks
+    
+
+    @staticmethod
+    def get_allPsdsLMR_PerFam( allResultsPSD : List[dict], index : int ) -> dict[List]:
+        psdsABC_perFreqCombCond = Fam_VS_Fam.get_psdsABC_perFreqCombCond( allResultsPSD, index )
+        psdsLMR_perFreqCombCond = Target_VS_NonTarget.get_psdsLMR_perFreqCombCond( psdsABC_perFreqCombCond )
+
+        allPeaks = {
+            "famLeft" : [],
+            "famMiddle" : [],
+            "famRight" : []
+        }
+        for freqCombCond in psdsABC_perFreqCombCond:
+            allPeaks["famLeft"].append( psdsLMR_perFreqCombCond[freqCombCond]["famLeft"] )
+            allPeaks["famMiddle"].append( psdsLMR_perFreqCombCond[freqCombCond]["famMiddle"] )
+            allPeaks["famRight"].append( psdsLMR_perFreqCombCond[freqCombCond]["famRight"] )
 
         return allPeaks
 
-
+#################################################################################################################################################################
 
     @staticmethod
     def test_whetherPeaksFamABC_sigDifferent(allResultsPSD : List[dict], index : int):
 
-        allPeaks = Fam_VS_Fam.get_allPsdsPerFam(allResultsPSD, index)
+        allPeaks = Fam_VS_Fam.get_allPsdsABC_PerFam(allResultsPSD, index)
 
         p_values_shapiro = list()
         print("\n")
@@ -117,12 +143,12 @@ class Fam_VS_Fam:
                 statistics, p_value_populDiff = stats.mannwhitneyu( allPeaks[fam1], allPeaks[fam2] )
                 print(f"Mann-Whitney_U: {fam1} VS {fam2}: p_value = {p_value_populDiff}")
 
-
+#################################################################################################################################################################
 
     @staticmethod
-    def boxplot_famLMR_perCond( allResultsPSD : dict, index : int, participantNr : int ):
+    def boxplot_famABC_perCond( allResultsPSD : dict, index : int, participantNr : int ):
 
-        allPeaks = Fam_VS_Fam.get_allPsdsPerFam(allResultsPSD, index)
+        allPeaks = Fam_VS_Fam.get_allPsdsABC_PerFam(allResultsPSD, index)
 
         data = {
             f"famA\n({BlockParams.FAM_A} Hz)"  : allPeaks["famA"],
@@ -139,5 +165,5 @@ class Fam_VS_Fam:
             axhline       = None
         )
 
-
+#################################################################################################################################################################
   

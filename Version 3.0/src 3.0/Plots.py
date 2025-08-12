@@ -54,37 +54,49 @@ class Plots:
 
 
     @staticmethod
-    def plot_PSD( avg_pows, freqs, freqCombCond, folderName, pNr, close_up : bool, save : bool ):
-        plt.figure( figsize=(10, 5) )
+    def plot_PSD( avg_pows : np.ndarray, freqs : np.ndarray, freqCombCond : str, trial : str, folderName : str, pNr : int, close_up : bool, save : bool ):
+        plt.figure(figsize=(10, 5))
         plt.plot(   freqs, avg_pows, label="", color = "black" )
 
         for fam in BlockParams.FAMS_ABC:
             plt.axvline( fam, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 ) # Vertical lines
 
-        plt.title(f"{freqCombCond}", fontsize=16, fontweight='bold', pad=20 )
-        plt.xlabel("$f$ [$Hz$]", fontsize=14)
-        plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=14) 
+        title_fontSize = 17
+        label_fontSize = 15
+        tick_fontSize = 13
+
+
+        plt.title(f"{freqCombCond} {trial}", fontsize=title_fontSize, fontweight='bold', pad=20 )
+        plt.xlabel("$f$ [$Hz$]", fontsize=label_fontSize)
+        plt.ylabel(r"$PSD$ [$\frac{V^{2}}{Hz}$]", fontsize=label_fontSize) 
 
 
         if( close_up == False ):
             min_f, max_f, step = 0.0, 60.0, 5.0
+            min_psd, max_psd = -1e-13, 1.0*1e-9
 
         elif( close_up == True ):
             min_f, max_f, step = 35.0, 45.0, 1.0
-            plt.ylim( bottom = -1e-13, top = 1.5*1e-11  )
+            min_psd, max_psd = -1e-13, 1.5*1e-11 
 
 
         plt.xlim( min_f, max_f )
-        plt.xticks( np.arange(min_f, max_f+1, step), fontsize=12 )
-        plt.yticks(fontsize=14)
+        plt.xticks( np.arange(min_f, max_f+1, step), fontsize=tick_fontSize )
+
+        plt.ylim( min_psd, max_psd )
+        plt.yticks( fontsize=tick_fontSize )
+
+        ax = plt.gca() # Access the current Axes object
+        ax.yaxis.get_offset_text().set_fontsize(tick_fontSize) # Change font size of the offset text (scale factor)
 
         #plt.grid(True)
         plt.tight_layout() 
         plt.show()
 
         if( save == True ):
-            fileName = folderName + f"\\psd_{freqCombCond}_participant{pNr}.png"
+            fileName = folderName + f"\\psd_{freqCombCond}_{trial}_participant{pNr}.png"
             plt.savefig(fname = fileName)
+            plt.close()
         elif( save == False ):
             plt.show()                     
             inp = input("any ")
@@ -110,14 +122,23 @@ class Plots:
             meanprops    = { "marker":"s", "markerfacecolor":"white", "markeredgecolor":"black" },
             flierprops   = { "marker":"x" } #Outliers    
         )
-        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=16, fontweight='bold', pad=10 )
+
+        title_fontSize = 17
+        label_fontSize = 15
+        tick_fontSize = 13
+
+        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=title_fontSize, fontweight='bold', pad=10 )
         #plt.rcParams["figure.figsize"] = (15,10)
         #plt.text( 2.1, 4.35, f"Participant {participantNr}", fontsize=12 )
 
-        plt.ylabel( ylabel, fontsize=14 )
-        plt.xlabel( xlabel, fontsize=14 )
-        plt.xticks( oldTicks, labels, fontsize = 14 )
-        plt.yticks( fontsize = 14)
+        plt.ylabel( ylabel, fontsize=label_fontSize )
+        plt.xlabel( xlabel, fontsize=label_fontSize )
+        plt.xticks( oldTicks, labels, fontsize = tick_fontSize )
+        plt.yticks( fontsize = tick_fontSize )
+
+        ax = plt.gca() # Access the current Axes object
+        ax.yaxis.get_offset_text().set_fontsize(tick_fontSize) # Change font size of the offset text (scale factor)
+
         if( axhline != None ):
             plt.axhline(y = axhline, color = "grey", linestyle = ":")
         

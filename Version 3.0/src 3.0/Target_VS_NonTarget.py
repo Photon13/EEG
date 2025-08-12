@@ -25,11 +25,11 @@ COLOREND    = '\033[0m'
 class Target_VS_NonTarget:
 
     @staticmethod #works
-    def covert_psdsABC_to_psds_LMR( freqCombCond :str, psdsABC : List | np.ndarray | np.ndarray[np.ndarray] ) -> List[float]:
+    def covert_psdsABC_to_psds_LMR( freqCombCond :str, psdsABC : dict ) -> List[float]:
 
-        A = psdsABC[0]
-        B = psdsABC[1]
-        C = psdsABC[2]
+        A = psdsABC["famA"]
+        B = psdsABC["famB"]
+        C = psdsABC["famC"]
 
         freqComb = str( re.findall(r"[A-C]{3}", freqCombCond)[0])
 
@@ -41,7 +41,11 @@ class Target_VS_NonTarget:
             "CAB"   : [C,A,B],
             "CBA"   : [C,B,A]
         }
-        psdsLMR : List = famsLMR_dict[freqComb] 
+        psdsLMR = {
+            "famLeft"   : famsLMR_dict[freqComb][0],
+            "famMiddle" : famsLMR_dict[freqComb][1],
+            "famRight"  : famsLMR_dict[freqComb][2]
+        }
         return psdsLMR
 
 
@@ -49,12 +53,18 @@ class Target_VS_NonTarget:
     @staticmethod
     def get_psdsLMR_perFreqCombCond( psdsABC_perFreqCombCond : dict ) -> dict:
 
-        psdsLMR__perFreqCombCond = dict()
+        psdsLMR_perFreqCombCond = dict()
         for freqCombCond in psdsABC_perFreqCombCond:
-            psdsABC = psdsABC_perFreqCombCond[freqCombCond]
-            psdsLMR__perFreqCombCond[freqCombCond] = Target_VS_NonTarget.covert_psdsABC_to_psds_LMR(freqCombCond, psdsABC)
+            psdsABC = {
+                "famA" : psdsABC_perFreqCombCond[freqCombCond]["famA"],
+                "famB" : psdsABC_perFreqCombCond[freqCombCond]["famB"],
+                "famC" : psdsABC_perFreqCombCond[freqCombCond]["famC"]
+            }
 
-        return psdsLMR__perFreqCombCond
+            psdsLMR : dict = Target_VS_NonTarget.covert_psdsABC_to_psds_LMR(freqCombCond, psdsABC)
+            psdsLMR_perFreqCombCond[freqCombCond] = psdsLMR
+
+        return psdsLMR_perFreqCombCond
 
 
 
@@ -64,22 +74,28 @@ class Target_VS_NonTarget:
         cond = str(re.findall(r"(left|middle|right|both)", freqCombCond)[0]) 
 
         if( cond == "left" ):
-            targets    = np.array( [psdsLMR[0]] )
-            nonTargets = np.array( [psdsLMR[1],psdsLMR[2]] )
+            targets    = np.array( [psdsLMR["famLeft"]] )
+            nonTargets = np.array( [psdsLMR["famMiddle"],psdsLMR["famRight"]] )
         elif( cond == "middle" ):
-            targets    = np.array( [psdsLMR[1]] )
-            nonTargets = np.array( [psdsLMR[0],psdsLMR[2]] )
+            targets    = np.array( [psdsLMR["famMiddle"]] )
+            nonTargets = np.array( [psdsLMR["famLeft"],psdsLMR["famRight"]] )
         elif( cond == "right" ):
-            targets    = np.array( [psdsLMR[2]] )
-            nonTargets = np.array( [psdsLMR[0],psdsLMR[1]] )
+            targets    = np.array( [psdsLMR["famRight"]] )
+            nonTargets = np.array( [psdsLMR["famLeft"],psdsLMR["famMiddle"]] )
         elif( cond == "both" ):
-            targets    = np.array( [psdsLMR[0],psdsLMR[2]] )
-            nonTargets = np.array( [psdsLMR[1]] )
+            targets    = np.array( [psdsLMR["famLeft"],psdsLMR["famRight"]] )
+            nonTargets = np.array( [psdsLMR["famMiddle"]] )
 
         psds_target    = float( np.mean( targets ) )
         psds_nonTarget = float( np.mean( nonTargets ) )
         quotient       = float( np.divide( psds_target, psds_nonTarget ) )
-        return [psds_target, psds_nonTarget, quotient]
+
+        resultDict = {
+            "psd_target"    : psds_target,
+            "psd_nonTarget" : psds_nonTarget,
+            "quotient"      : quotient
+        }
+        return resultDict
     
 
 
@@ -88,9 +104,9 @@ class Target_VS_NonTarget:
 
         psdsTnT_perFreqCombCond = dict()
         for freqCombCond in psdsLMR_perFreqCombCond:
-            psds_LMR : List[float] = psdsLMR_perFreqCombCond[freqCombCond]
-            psdsTnT_perFreqCombCond[freqCombCond] = list( Target_VS_NonTarget.calc_psdTarget_nonTarget(freqCombCond, psds_LMR) )
+            psds_LMR : dict = psdsLMR_perFreqCombCond[freqCombCond]
 
+            psdsTnT_perFreqCombCond[freqCombCond] = Target_VS_NonTarget.calc_psdTarget_nonTarget(freqCombCond, psds_LMR)
         return psdsTnT_perFreqCombCond
     
 
@@ -111,9 +127,9 @@ class Target_VS_NonTarget:
         for freqCombCond in psdsLMR_perFreqCombCond:
             cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] )
 
-            psdsLMR_perCond[cond]["famLeft"].append( psdsLMR_perFreqCombCond[freqCombCond][0] )
-            psdsLMR_perCond[cond]["famMiddle"].append( psdsLMR_perFreqCombCond[freqCombCond][1] )
-            psdsLMR_perCond[cond]["famRight"].append( psdsLMR_perFreqCombCond[freqCombCond][2] )
+            psdsLMR_perCond[cond]["famLeft"].append( psdsLMR_perFreqCombCond[freqCombCond]["famLeft"] )
+            psdsLMR_perCond[cond]["famMiddle"].append( psdsLMR_perFreqCombCond[freqCombCond]["famMiddle"] )
+            psdsLMR_perCond[cond]["famRight"].append( psdsLMR_perFreqCombCond[freqCombCond]["famRight"] )
         return psdsLMR_perCond
 
 
@@ -125,17 +141,20 @@ class Target_VS_NonTarget:
         psdsTnT_perCond = dict()
         for condition in ["left", "middle", "right", "both"]:
             psdsTnT_perCond[condition] = {
-                "psd_target"    : [],
-                "psd_nonTarget" : [],
-                "quotient"      : []
+                "psds_target"    : [],
+                "psds_nonTarget" : [],
+                "quotient"       : []
             }
 
         for freqCombCond in psdsTnT_perFreqCombCond:
             cond = str( re.findall( r"(left|middle|right|both)", freqCombCond )[0] ) 
 
-            psd_target, psd_nonTarget, quotient = psdsTnT_perFreqCombCond[freqCombCond][0], psdsTnT_perFreqCombCond[freqCombCond][1], psdsTnT_perFreqCombCond[freqCombCond][2]
-            psdsTnT_perCond[cond]["psd_target"].append( psd_target ) 
-            psdsTnT_perCond[cond]["psd_nonTarget"].append( psd_nonTarget )
+            psd_target = psdsTnT_perFreqCombCond[freqCombCond]["psd_target"]
+            psd_nonTarget = psdsTnT_perFreqCombCond[freqCombCond]["psd_nonTarget"]
+            quotient = psdsTnT_perFreqCombCond[freqCombCond]["quotient"]
+
+            psdsTnT_perCond[cond]["psds_target"].append( psd_target ) 
+            psdsTnT_perCond[cond]["psds_nonTarget"].append( psd_nonTarget )
             psdsTnT_perCond[cond]["quotient"].append( quotient )
 
         return psdsTnT_perCond
@@ -178,8 +197,8 @@ class Target_VS_NonTarget:
             print(COLORGREEN + f"\n{cond}" + COLOREND)
 
             p_values_shapiro = []
-            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psd_target"], "psd_target" ) )
-            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psd_nonTarget"], "psd_nonTarget" ) )
+            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psds_target"], "psds_target" ) )
+            p_values_shapiro.append( Statistics.shapiroWilk( psdsTnT_perCond[cond]["psds_nonTarget"], "psds_nonTarget" ) )
             
             if all( p_value > 0.05 for p_value in p_values_shapiro ):
                 method = "t-test"
@@ -187,8 +206,8 @@ class Target_VS_NonTarget:
                 method = "mann-whitney-u"
 
             data = {
-                "psd_target"    : psdsTnT_perCond[cond]["psd_target"], 
-                "psd_nonTarget" : psdsTnT_perCond[cond]["psd_nonTarget"] 
+                "psds_target"    : psdsTnT_perCond[cond]["psds_target"], 
+                "psds_nonTarget" : psdsTnT_perCond[cond]["psds_nonTarget"] 
             }
             Statistics.test_sigDifference( data, method )
 
@@ -220,10 +239,10 @@ class Target_VS_NonTarget:
     @staticmethod
     def boxplot_quotient_VS_quotient( psdsTnT_perCond : dict, participantNr : int ):
         data = {
-            "left" : psdsTnT_perCond["left"]["quotient"],
+            "left"   : psdsTnT_perCond["left"]["quotient"],
             "middle" : psdsTnT_perCond["middle"]["quotient"],
-            "right" : psdsTnT_perCond["right"]["quotient"],
-            "both" : psdsTnT_perCond["both"]["quotient"]
+            "right"  : psdsTnT_perCond["right"]["quotient"],
+            "both"   : psdsTnT_perCond["both"]["quotient"]
         }
         Plots.boxplot( 
             data          = data, 
@@ -238,8 +257,8 @@ class Target_VS_NonTarget:
     def boxplot_target_VS_nonTarget( psdsTnT_perCond : dict, participantNr : int ):
         for cond in ["left", "middle", "right", "both"]:
             data = {
-                "target"    : psdsTnT_perCond[cond]["psd_target"],
-                "nonTarget" : psdsTnT_perCond[cond]["psd_nonTarget"]
+                "target"    : psdsTnT_perCond[cond]["psds_target"],
+                "nonTarget" : psdsTnT_perCond[cond]["psds_nonTarget"]
             }
             Plots.boxplot( 
                 data          = data, 

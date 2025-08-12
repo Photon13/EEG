@@ -33,7 +33,7 @@ index = 1                   # <---
 
 
 pathAllResultsPSD  = f"data\\results\\allResultsPSD_participant{pNr}_mainExp{durchgang}.pkl"
-allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
+allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
 
 #AllResults.showAllResults( allResultsPSD )         # <--- 
                                                        
@@ -59,22 +59,25 @@ sfreq               = allResultsPSD[index]["sfreq"]
 recordingElectrodes = allResultsPSD[index]["recordingElectrodes"]
 
 
-freqCombConds = list()
-for key in allResultsPSD[index]["voltDict"]:
-    freqCombConds.append(key)
+poss_freqCombConds = list()
+for freqCombCond in allResultsPSD[index]["voltDict"]:
+    if freqCombCond not in poss_freqCombConds:
+        poss_freqCombConds.append(freqCombCond)
 
 
 psdsDict  = dict()
 freqsDict = dict()
-for freqCombCond in freqCombConds:
-    avg_pows = allResultsPSD[index]["psdsDict"][freqCombCond]
-    freqs    = allResultsPSD[index]["freqsDict"][freqCombCond]
-    Plots.plot_PSD(
-        avg_pows, 
-        freqs, 
-        freqCombCond, 
-        folderName, 
-        pNr, 
-        close_up = True,      # <---
-        save = True       # <---
-    ) 
+for freqCombCond in poss_freqCombConds:
+    for trial in allResultsPSD[index]["psdsDict"][freqCombCond]:
+        avg_pows = allResultsPSD[index]["psdsDict"][freqCombCond][trial]
+        freqs    = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
+        Plots.plot_PSD(
+            avg_pows, 
+            freqs, 
+            freqCombCond,
+            trial,
+            folderName, 
+            pNr, 
+            close_up = True,      # <---
+            save = True       # <---
+        ) 
