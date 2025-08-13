@@ -1,20 +1,29 @@
+from typing import List
+
 class BlockParams:
     
-    FAM_A = 35.9
-    FAM_B = 39.7
-    FAM_C = 43.2
+    FAMS_ABC = { 
+        "FAM_A" : 35.9, 
+        "FAM_B" : 39.7, 
+        "FAM_C" : 43.2
+    }
 
-    FAMS_ABC = [FAM_A, FAM_B, FAM_C]
-
-    N_BLOCKS = 3*4*6
-    BLOCK_LENGTH = 30 # [sec]
+    DEFAULT_N_BLOCKS = 3*4*6
+    DEFAULT_BLOCK_LENGTH = 30 # [sec]
 
     ########################################################
-    freqCombs = ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"]
-    freqComb : str
+    POSS_FREQ_COMBS : List[str] = ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"]
 
-    conditions = ["left", "middle", "right", "both"]
-    condition : int
+    POSS_TARGETS : List[str] = ["left", "middle", "right", "both"]
 
-    trials = [1, 2, 3]
-    trial : int
+    POSS_TRIALS : List[int] = [1, 2, 3]
+
+    def get_possFreqCombConds():
+        poss_freqCombConds = []
+        for fC in BlockParams.POSS_FREQ_COMBS:
+            for target in BlockParams.POSS_TARGETS:
+                poss_freqCombConds.append(f"{fC}_{target}")
+        return poss_freqCombConds
+    
+print( len(BlockParams.get_possFreqCombConds()) )
+print( BlockParams.get_possFreqCombConds() )

@@ -77,6 +77,7 @@ class Plots:
 
         elif( close_up == True ):
             min_f, max_f, step = 35.0, 45.0, 1.0
+            #min_f, max_f, step = 42.5, 43.5, 0.1
             min_psd, max_psd = -1e-13, 1.5*1e-11 
 
 

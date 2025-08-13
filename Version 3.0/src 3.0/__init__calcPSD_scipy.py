@@ -28,8 +28,7 @@ def scipyPowerSpectrum(voltage : np.ndarray, sfreq : int ):
     freqs, pows = scipy.signal.periodogram(
         x       = voltage,
         fs      = sfreq,
-        nfft    = 131072, #16384,
-        scaling = "density" #
+        scaling = "density" 
     )
     return pows, freqs
 
@@ -52,8 +51,8 @@ def calcAverage( pows : List[np.ndarray] | np.ndarray ):
 
 
 # CHOOSE PARTICIPANT:
-pNr = 2                  # <---            
-durchgang = "2"          # <---      
+pNr = 4                  # <---            
+durchgang = "4"          # <---      
 ###########################
 
 

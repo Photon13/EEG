@@ -24,8 +24,8 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 2                  # <---            
-durchgang = "2"          # <---      
+pNr = 4                  # <---            
+durchgang = "4"          # <---      
 ###########################
 
 
@@ -72,13 +72,15 @@ for ch in ["25", "13", "15"] :      # <---
 rawFull.drop_channels(bad_channels)
 ###########################
 # FILTERING:
-l_freq = 1.0
-h_freq = 60.0
-notch_freq = 50.0
-notch_width = 1.0
 
+l_freq = None #1.0
+h_freq = None #60.0
+notch_freq = None #50.0
+notch_width = None #1.0
+"""
 rawFull = rawFull.notch_filter( freqs = notch_freq, notch_widths = notch_width )
 rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
+"""
 ###########################
 # INDEPENDENT COMPONENT ANALYSIS:
 n_componentsICA = None #0.999       # <---
