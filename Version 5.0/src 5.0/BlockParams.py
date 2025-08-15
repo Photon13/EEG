@@ -7,10 +7,11 @@ class BlockParams:
         "FAM_B" : 39.7, 
         "FAM_C" : 43.2
     }
+    FAMS_ABC_LIST = [ FAMS_ABC["FAM_A"], FAMS_ABC["FAM_B"], FAMS_ABC["FAM_C"] ]
 
     DEFAULT_N_BLOCKS     : int = 3*4*6
     DEFAULT_BLOCK_LENGTH : int = 30 # [sec]
-    DEFAULT_SAMPLERATE   : float = 500.0
+    DEFAULT_SFREQ   : float = 500.0
 
     ########################################################
     POSS_FREQ_COMBS : List[str] = ["ABC", "ACB", "BAC", "BCA", "CAB", "CBA"]
