@@ -20,8 +20,8 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 2                     # <---            
-durchgang = "2"             # <---      
+pNr = 4                     # <---            
+durchgang = "4"             # <---      
 ###########################
 
 
@@ -60,7 +60,7 @@ rawFull.drop_channels(bad_channels)
 
 
 # FILTERING:
-filtering : bool = False        # <--- 
+filtering : bool = True        # <--- 
 
 if( filtering == True ):
     l_freq = 1.0
@@ -194,7 +194,7 @@ voltage_concatAllGoodBlocks, times_concatAllGoodBlocks = mne.io.Raw.get_data(
     return_times  = True, 
     units         = "V",
 )
-print( f"huhu {times_concatAllGoodBlocks}")
+voltage_concatAllGoodBlocks = voltage_concatAllGoodBlocks[0]
 
 paramDict = {                                                 
     "file_id"             : f"participant{pNr}_mainExp{durchgang}.vhdr",                                   

@@ -20,7 +20,7 @@ class F_Test:
     N_IGNORE = 2
 
     @staticmethod
-    def inspect_rangeAroundFam( whichToPrint : str, fam : float, freqs : np.ndarray, psds : np.ndarray ):
+    def inspect_rangeAroundFam( whichToPrint : str, n_neighbours_perSide : int, fam : float, freqs : np.ndarray, psds : np.ndarray ):
         """ whichToPrint = \"freqs\" | \"psds\" """
 
         # find index of frequency bin closest to stimulation frequency
@@ -29,9 +29,6 @@ class F_Test:
 
         freqs_inRange     = list()
         psds_inRange      = list()
-
-        n_neighbours_perSide = 60
-
 
         for i in range(i_bin_fam - n_neighbours_perSide, i_bin_fam + n_neighbours_perSide+1):
             freqs_inRange.append( freqs[i] )

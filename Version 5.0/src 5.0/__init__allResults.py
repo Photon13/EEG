@@ -24,7 +24,8 @@ pathAllResultsPSD  = basisPath + f"allResultsPSD_participant{pNr}_mainExp{durchg
 print(COLORGREEN + "allResultsPSD" + COLOREND)
 AllResults.showAllResults( pathAllResultsPSD )
 
-#allResultsPSD = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
-#allResultsPSD[0]["psds_concatAllGoodBlocks"] = allResultsPSD[0].pop("psds_concatAllGoodBlock")
-#allResultsPSD[1]["psds_concatAllGoodBlocks"] = allResultsPSD[1].pop("psds_concatAllGoodBlock")
+#allResultsVolt = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
+#pop = allResultsVolt[0].pop("voltage_concatAllGoodBlocks")
+#allResultsVolt[0]["psds_voltage_concatAllGoodBlocks"] = pop[0]
 #AllResults.saveAsPickle_allResults( allResultsPSD, pathAllResultsPSD )
+

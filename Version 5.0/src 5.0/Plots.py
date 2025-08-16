@@ -147,3 +147,107 @@ class Plots:
         plt.show()
         inp = input("any ")
         plt.close()
+
+
+
+#############################################################################################################################
+#############################################################################################################################
+#############################################################################################################################
+
+
+
+
+class BoxplotPeaks:
+
+    @staticmethod
+    def boxplot_famABC_allPeaks( allPeaksABC : dict[List], participantNr : int ) -> None:
+
+        data = {
+            f"famA\n({BlockParams.FAMS_ABC["FAM_A"]} Hz)"  : allPeaksABC["famA"],
+            f"famB\n({BlockParams.FAMS_ABC["FAM_B"]} Hz)"  : allPeaksABC["famB"],
+            f"famC\n({BlockParams.FAMS_ABC["FAM_C"]} Hz)"  : allPeaksABC["famC"],
+
+        }
+        Plots.boxplot( 
+            data          = data, 
+            title         = f"PSD per fam", # ignores whether fam has been target or not => all data included
+            participantNr = participantNr, 
+            ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+            xlabel        = f"", 
+            axhline       = None
+        )
+
+
+
+    @staticmethod
+    def boxplot_famLMR_allPeaks( allPeaksLMR : dict[List], participantNr : int ) -> None:
+
+        data = {
+            f"famLeft"   : allPeaksLMR["famLeft"],
+            f"famMiddle" : allPeaksLMR["famMiddle"],
+            f"famRight"  : allPeaksLMR["famRight"],
+        }
+        Plots.boxplot( 
+            data          = data, 
+            title         = f"PSD per fam", # ignores whether fam has been target or not => all data included
+            participantNr = participantNr, 
+            ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+            xlabel        = f"", 
+            axhline       = None
+        )
+
+
+
+    @staticmethod
+    def boxplot_famLMR_perCond( psdsLMR_perCond : dict[List], participantNr : int ) -> None:
+        for fam in ["famLeft", "famMiddle", "famRight"]:
+            data = {
+                "left"   : psdsLMR_perCond["left"][fam],
+                "middle" : psdsLMR_perCond["middle"][fam],
+                "right"  : psdsLMR_perCond["right"][fam],
+                "both"   : psdsLMR_perCond["both"][fam]
+            }
+            Plots.boxplot( 
+                data          = data, 
+                title         = f"PSD({fam}) per condition", # ignores whether fam has been target or not => all data included
+                participantNr = participantNr, 
+                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+                xlabel        = f"Condition", 
+                axhline       = None
+            )
+
+
+    @staticmethod
+    def boxplot_target_VS_nonTarget( psdsTnT_perCond : dict[dict], participantNr : int ) -> None:
+        for cond in ["left", "middle", "right", "both"]:
+            data = {
+                "target"    : psdsTnT_perCond[cond]["psd_target"],
+                "nonTarget" : psdsTnT_perCond[cond]["psd_nonTarget"]
+            }
+            Plots.boxplot( 
+                data          = data, 
+                title         = "PSD(target) VS PSD(nonTarget)", 
+                participantNr = participantNr, 
+                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+                xlabel        = f"condition = {cond}", 
+                axhline       = None
+            )
+
+
+
+    @staticmethod
+    def boxplot_quotient_VS_quotient( psdsTnT_perCond : dict[dict], participantNr : int ) -> None:
+        data = {
+            "left"   : psdsTnT_perCond["left"]["quotient"],
+            "middle" : psdsTnT_perCond["middle"]["quotient"],
+            "right"  : psdsTnT_perCond["right"]["quotient"],
+            "both"   : psdsTnT_perCond["both"]["quotient"]
+        }
+        Plots.boxplot( 
+            data          = data, 
+            title         = "Quotient per condition", 
+            participantNr = participantNr, 
+            ylabel        = r"$\frac{PSD(target)}{PSD(nonTarget)}$", 
+            xlabel        = r"condition", 
+            axhline       = 1.0
+        )
