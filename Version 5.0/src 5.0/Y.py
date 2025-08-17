@@ -1,5 +1,9 @@
 from Statistics import Statistics
+from BlockParams import BlockParams
+from X import HelpClass_PeakAnalysis
+from Plots import Plots
 
+from scipy import stats
 from typing import List
 import numpy as np
 import copy
@@ -112,6 +116,7 @@ class Y:
             Statistics.test_sigDifference( data, method )
 
 
+    @staticmethod
     def test_sigDiff_betweenFams( allPeaks ):
 
         famNames = []
@@ -119,9 +124,9 @@ class Y:
             if( famName not in famNames ):
                 famNames.append(famName)
 
+        print(COLORCYAN + f"\nTest sigDiff between fams:" + COLOREND)
         for famName in famNames:
-            print(COLORCYAN + f"\nTest sigDiff between fams:" + COLOREND)
-
+            
             p_values_shapiro = []
             for cond in ["left", "middle", "right", "both"]:
                 p_values_shapiro.append( Statistics.shapiroWilk( allPeaks[famName], f"{famName}" ) )
@@ -137,4 +142,106 @@ class Y:
                 data[famName] = allPeaks[famName]
 
         Statistics.test_sigDifference( data, method )
+
+
+    @staticmethod
+    def boxplot_fam_perCond( dictPerCond : dict[List], participantNr : int ) -> None:
+        
+        fams = []
+        for freqCombCond in dictPerCond:
+            for fam in dictPerCond[freqCombCond]:
+                if( fam not in fams ):
+                    fams.append(fam)
+
+        
+        for fam in fams:
+            data = {
+                "left"   : dictPerCond["left"][fam],
+                "middle" : dictPerCond["middle"][fam],
+                "right"  : dictPerCond["right"][fam],
+                "both"   : dictPerCond["both"][fam]
+            }
+            Plots.boxplot( 
+                data          = data, 
+                title         = f"PSD({fam}) per condition", # ignores whether fam has been target or not => all data included
+                participantNr = participantNr, 
+                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+                xlabel        = f"Condition", 
+                axhline       = None
+            )
                 
+
+    @staticmethod
+    def test_sigHigherThanNoise( allResultsPSD : List[dict], index : int ) -> None:
+
+        print(COLORGREEN  + "\n\nTest whether PSD of famA, famB or famC sig. higher than noise" + COLOREND)
+
+        #################################################################
+        print(COLORYELLOW  + "\nallGoodBlocksConcat: " + COLOREND)
+        count_sig    = 0
+        count_nonSig = 0
+  
+        psds  = allResultsPSD[index]["psds_concatAllGoodBlocks"]
+        freqs = allResultsPSD[index]["freqs_concatAllGoodBlocks"]
+
+        for fam in BlockParams.FAMS_ABC_LIST:
+            count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+
+        print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+
+
+        #################################################################
+        print(COLORYELLOW  + "\ntrialsConcat: " + COLOREND)
+        count_sig    = 0
+        count_nonSig = 0
+
+        for freqCombCond in allResultsPSD[index]["psdsDict"]:
+            for trial in allResultsPSD[index]["psdsDict"][freqCombCond]:
+                if( trial == "trial0" ):
+
+                    psds  = allResultsPSD[index]["psdsDict"][freqCombCond][trial]
+                    freqs = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
+
+                    for fam in BlockParams.FAMS_ABC_LIST:
+                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+
+        print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+
+
+        #################################################################
+        print(COLORYELLOW  + "\ntrials separately: " + COLOREND)
+        count_sig    = 0
+        count_nonSig = 0
+
+        for freqCombCond in allResultsPSD[index]["psdsDict"]:
+            for trial in allResultsPSD[index]["psdsDict"][freqCombCond]:
+                if( trial == "trial1" or trial == "trial2" or trial == "trial3" ):
+
+                    psds  = allResultsPSD[index]["psdsDict"][freqCombCond][trial]
+                    freqs = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
+
+                    for fam in BlockParams.FAMS_ABC_LIST:
+                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+
+        print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+
+
+
+    @staticmethod
+    def increase_properCount( psds, freqs, fam, count_sig, count_nonSig ): 
+        """ Help fct for test_sigHigherThanNoise() """
+        i_largestVal       = HelpClass_PeakAnalysis.get_indexLargestValue_nextFam( fam, psds, freqs )
+        psds_neighbours    = HelpClass_PeakAnalysis.get_PSDneighbours( fam, psds, freqs )
+        psd_peak           = psds[i_largestVal]
+
+        statistic, p_value = stats.f_oneway( psd_peak, psds_neighbours )
+
+        if( 0.05 < round(p_value, 1) ):
+            count_sig += 1
+        else:
+            count_nonSig += 1
+            
+        return count_sig, count_nonSig

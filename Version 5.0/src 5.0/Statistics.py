@@ -42,3 +42,4 @@ class Statistics:
                 print(COLORPURPLE, end="")    
             print(f"    {mean1} {sign} {mean2}"   + COLOREND)
 
+

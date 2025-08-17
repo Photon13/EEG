@@ -121,7 +121,7 @@ class Plots:
             boxprops     = { "facecolor":"lightgrey" },
             medianprops  = { "color":"black" }, 
             meanprops    = { "marker":"s", "markerfacecolor":"white", "markeredgecolor":"black" },
-            flierprops   = { "marker":"x" } #Outliers    
+            flierprops   = { "marker":"o" } #Outliers    
         )
 
         title_fontSize = 17
@@ -198,23 +198,6 @@ class BoxplotPeaks:
 
 
 
-    @staticmethod
-    def boxplot_famLMR_perCond( psdsLMR_perCond : dict[List], participantNr : int ) -> None:
-        for fam in ["famLeft", "famMiddle", "famRight"]:
-            data = {
-                "left"   : psdsLMR_perCond["left"][fam],
-                "middle" : psdsLMR_perCond["middle"][fam],
-                "right"  : psdsLMR_perCond["right"][fam],
-                "both"   : psdsLMR_perCond["both"][fam]
-            }
-            Plots.boxplot( 
-                data          = data, 
-                title         = f"PSD({fam}) per condition", # ignores whether fam has been target or not => all data included
-                participantNr = participantNr, 
-                ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
-                xlabel        = f"Condition", 
-                axhline       = None
-            )
 
 
     @staticmethod

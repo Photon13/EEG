@@ -30,10 +30,33 @@ basisPath = f"d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeMod
 pathAllResultsPSD  = basisPath + f"allResultsPSD_participant{pNr}_mainExp{durchgang}.pkl"
 allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
 
+print( COLORRED + f"\nparticipant{pNr}" + COLOREND )
+
+
+########################    
+
+#Y.test_sigHigherThanNoise( allResultsPSD, index )    # <---
+ 
+########################
+
+
+"""
+freqs = allResultsPSD[index]["freqsDict"]["ABC_middle"]["trial1"]
+psds = allResultsPSD[index]["psdsDict"]["ABC_left"]["trial1"]
+
+HelpClass_PeakAnalysis.inspect_rangeAroundFam( 
+    whichToPrint         = "freqs", 
+    n_neighbours_perSide = 60, 
+    fam                  = BlockParams.FAMS_ABC["FAM_C"], 
+    freqs                = freqs, 
+    psds                 = psds
+)
+"""
+
 
 ########################                    # <---
-trials = ["trial0"]
-#trials = ["trial1", "trial2", "trial3"]       
+#trials = ["trial0"]
+trials = ["trial1", "trial2", "trial3"]       
 ########################
 
 
@@ -51,43 +74,29 @@ allPeaksTnT             : dict[List] = Y.get_allPeaks( psdsTnT_perFreqCombCond )
 
 
 
-
-
-
-
-
-
-
-
-"""
-freqs = allResultsPSD[index]["freqsDict"]["ABC_middle"]["trial1"]
-psds = allResultsPSD[index]["psdsDict"]["ABC_left"]["trial1"]
-
-HelpClass_PeakAnalysis.inspect_rangeAroundFam( 
-    whichToPrint         = "freqs", 
-    n_neighbours_perSide = 60, 
-    fam                  = BlockParams.FAMS_ABC["FAM_C"], 
-    freqs                = freqs, 
-    psds                 = psds
-)
-"""
-
-#StatisticsPeaks.test_famABC_sigHigher_thanNoise( allResultsPSD, index, None )
-#StatisticsPeaks.test_famABC_sigHigher_thanNoise( allResultsPSD, index, trials )
-
+########################                            # <---
+print( COLORRED + f"\n{trials}\n" + COLOREND )
 
 Y.test_sigDiff_betweenFams( allPeaksABC )
-Y.test_sigDiff_betweenFams( allPeaksLMR )
+BoxplotPeaks.boxplot_famABC_allPeaks( allPeaksABC, pNr )
+
+#Y.test_sigDiff_betweenFams( allPeaksLMR )
+#BoxplotPeaks.boxplot_famLMR_allPeaks( allPeaksLMR, pNr )
+
+#######
 
 #Y.test_sigDiff_betweenConds_perFam( psdsABC_perCond )
-#Y.test_sigDiff_betweenConds_perFam( psdsLMR_perCond )
-#StatisticsPeaks.testSigDifferent_target_VS_nonTarget( psdsTnT_perCond )
-#StatisticsPeaks.testSigDifferent_quotient_VS_quotient( psdsTnT_perCond )
+#Y.boxplot_fam_perCond( psdsABC_perCond, pNr )
 
-#BoxplotPeaks.boxplot_famABC_allPeaks( allPeaksABC, pNr )
-#BoxplotPeaks.boxplot_famLMR_allPeaks( allPeaksLMR, pNr )
-#BoxplotPeaks.boxplot_famLMR_perCond( psdsLMR_perCond, pNr )
+#Y.test_sigDiff_betweenConds_perFam( psdsLMR_perCond )
+#Y.boxplot_fam_perCond( psdsLMR_perCond, pNr )
+
+#######
+
+#StatisticsPeaks.testSigDifferent_target_VS_nonTarget( psdsTnT_perCond )
 #BoxplotPeaks.boxplot_target_VS_nonTarget( psdsTnT_perCond, pNr )
+
+#StatisticsPeaks.testSigDifferent_quotient_VS_quotient( psdsTnT_perCond )
 #BoxplotPeaks.boxplot_quotient_VS_quotient( psdsTnT_perCond, pNr )
 
-
+######################## 
