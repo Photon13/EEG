@@ -18,13 +18,13 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 4                     # <---            
-durchgang = "4"             # <---      
+pNr = 3                     # <---            
+durchgang = "3"             # <---      
 ###########################
 
 
 # SET PATHS:
-folderEEG : str = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files"
+folderEEG : str = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\rawEEG"
 
 pathVHDR : str = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp{durchgang}.vhdr"
 pathVMRK : str = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp{durchgang}.vmrk"
@@ -40,10 +40,17 @@ with open( pathBlockDict, "r" ) as f:
 
 # LADE RAW FULL:
 rawFull = mne.io.read_raw_brainvision( vhdr_fname = pathVHDR, ignore_marker_types = True, preload = True )
+l_freq = 1.0
+h_freq = 60.0
+notch_freq = 50.0
+notch_width = 1.0
+rawFull = rawFull.notch_filter( freqs = notch_freq, notch_widths = notch_width )
+rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 ###########################
 
+
 # SET REFERENCE (OPTIONAL):
-#rawFull = mne.set_eeg_reference( rawFull, ref_channels = " ")[0]     # <---
+rawFull = mne.set_eeg_reference( rawFull, ref_channels = ["13", "15"])[0]     # <---
 ###########################
 
 
@@ -64,5 +71,5 @@ allRaws = allRaws[0]
 
 picks = ["14", "20", "25", "27", "13", "15"]
 
-allRaws.plot(picks = picks)      # <---
+allRaws.plot(picks = picks) 
 inp = input("any ")

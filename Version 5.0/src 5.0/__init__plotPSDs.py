@@ -59,8 +59,7 @@ def plot_trial0( allResultsPSD, index, pNr, folderName, close_up, save ):
 @staticmethod
 def plot_psdAllGoodBlocksConcat( allResultsPSD, index, pNr, folderName, close_up, save ):
     freqCombCond = "all blocks concatenated"
-    trial = ""
-    psds  = allResultsPSD[index]["psds_concatAllGoodBlocks"][0]
+    psds  = allResultsPSD[index]["psds_concatAllGoodBlocks"]
     freqs = allResultsPSD[index]["freqs_concatAllGoodBlocks"]
     Plots.plot_PSD(
         psds, 
@@ -83,7 +82,7 @@ def plot_psdAllGoodBlocksConcat( allResultsPSD, index, pNr, folderName, close_up
 
 
 ########################
-pNr, durchgang = 2, "2"       # <---
+pNr, durchgang = 1, "1"       # <---
 
 index = 0                   # <---
 ########################
@@ -110,7 +109,7 @@ plotTypes = ["trial0", "trials123", "allBlocks_concat"]
 
 plotType = "trials123"         # <---
 
-close_up = False            # <---
+close_up = True            # <---
 save     = True             # <---
 ########################
 

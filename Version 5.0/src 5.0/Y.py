@@ -185,10 +185,12 @@ class Y:
         freqs = allResultsPSD[index]["freqs_concatAllGoodBlocks"]
 
         for fam in BlockParams.FAMS_ABC_LIST:
-            count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+            count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, "trial0", count_sig, count_nonSig ) # trialType für allGoodBlocks ggf. noch separat implementieren.
 
         print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
-        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}" + COLOREND)
+        proportion = round( float(count_sig) / float(count_sig + count_nonSig ), 2)
+        print(COLORPURPLE + f"proportion sig peaks = {proportion}" + COLOREND)
 
 
         #################################################################
@@ -204,10 +206,12 @@ class Y:
                     freqs = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
 
                     for fam in BlockParams.FAMS_ABC_LIST:
-                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, "trial0", count_sig, count_nonSig )
 
         print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
-        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}" + COLOREND)
+        proportion = round( float(count_sig) / float(count_sig + count_nonSig ), 2)
+        print(COLORPURPLE + f"proportion sig peaks = {proportion}" + COLOREND)
 
 
         #################################################################
@@ -223,18 +227,20 @@ class Y:
                     freqs = allResultsPSD[index]["freqsDict"][freqCombCond][trial]
 
                     for fam in BlockParams.FAMS_ABC_LIST:
-                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, count_sig, count_nonSig )
+                        count_sig, count_nonSig = Y.increase_properCount( psds, freqs, fam, "trials123", count_sig, count_nonSig )
 
         print(COLORCYAN   + f"count_sig = {count_sig}"       + COLOREND)
-        print(COLORCYAN   + f"count_nonSig = {count_nonSig}\n" + COLOREND)
+        print(COLORCYAN   + f"count_nonSig = {count_nonSig}" + COLOREND)
+        proportion = round( float(count_sig) / float(count_sig + count_nonSig ), 2)
+        print(COLORPURPLE + f"proportion sig peaks = {proportion}" + COLOREND)
 
 
 
     @staticmethod
-    def increase_properCount( psds, freqs, fam, count_sig, count_nonSig ): 
+    def increase_properCount( psds, freqs, fam, trialType : str, count_sig, count_nonSig ): 
         """ Help fct for test_sigHigherThanNoise() """
-        i_largestVal       = HelpClass_PeakAnalysis.get_indexLargestValue_nextFam( fam, psds, freqs )
-        psds_neighbours    = HelpClass_PeakAnalysis.get_PSDneighbours( fam, psds, freqs )
+        i_largestVal       = HelpClass_PeakAnalysis.get_indexLargestValue_nextFam( fam, trialType, psds, freqs )
+        psds_neighbours    = HelpClass_PeakAnalysis.get_PSDneighbours( fam, trialType, psds, freqs )
         psd_peak           = psds[i_largestVal]
 
         statistic, p_value = stats.f_oneway( psd_peak, psds_neighbours )

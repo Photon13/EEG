@@ -25,12 +25,20 @@ COLOREND    = '\033[0m'
 
 class HelpClass_PeakAnalysis:
 
-    TOLERATED_PEAK_DEVIATION = 1
-    N_INCLUDE_PER_SIDE = 60 #1.33333 Hz
-    N_IGNORE = 2
-    # two bins are ca. 0.0111 Hz apart
-
-    #for trials123 : 1, 20, 1 
+    @staticmethod
+    def get_peakAnalysisParams( trialType : str ):
+        """ trialType = "trial0" | "trial123" """
+        if( trialType == "trial0" ):  # two bins are ca. 0.0111 Hz apart
+            toleratedPeakDeviation = 1 # 3 #1 #kein Unterschied Ergebnis
+            n_includePerSide = 60 #1.33333 Hz
+            n_ignore = 2 #3 #2 #kein Unterschied Ergebnis
+        elif( trialType == "trials123" ):
+            toleratedPeakDeviation = 1
+            n_includePerSide = 20
+            n_ignore = 1
+        else:
+            print( COLORRED + "Invalid trialType! " + COLOREND + "Message from get_peakAnalysisParams()")
+        return toleratedPeakDeviation, n_includePerSide, n_ignore
 
     @staticmethod
     def inspect_rangeAroundFam( whichToPrint : str, n_neighbours_perSide : int, fam : float, freqs : np.ndarray, psds : np.ndarray ):
@@ -68,11 +76,12 @@ class HelpClass_PeakAnalysis:
 
 
     @staticmethod
-    def get_indexLargestValue_nextFam( fam : int, psds : np.ndarray, freqs : np.ndarray ):
+    def get_indexLargestValue_nextFam( fam : int, trialType : str, psds : np.ndarray, freqs : np.ndarray ):
         # find index of frequency bin closest to stimulation frequency
         i_bin_fam = np.argmin( abs(freqs - fam) )
 
-        tolDev = HelpClass_PeakAnalysis.TOLERATED_PEAK_DEVIATION # max. erlaubter Abstand von Fam in Abtastunkten
+        toleratedPeakDeviation, n_includePerSide, n_ignore = HelpClass_PeakAnalysis.get_peakAnalysisParams( trialType )
+        tolDev = toleratedPeakDeviation # max. erlaubter Abstand von Fam in Abtastunkten
         # Bsp. maxDistFromFam = 2:
         # Erste und zweite freq links & rechts von fam werden auch berücksichtigt
         # Falls die psd einer dieser freqs größer ist als psd(fam), dann wird diese freq stattdessen genutzt
@@ -90,11 +99,10 @@ class HelpClass_PeakAnalysis:
 
 
     @staticmethod
-    def get_PSDneighbours( fam : int, psds : np.ndarray, freqs : np.ndarray ):
+    def get_PSDneighbours( fam : int, trialType : str, psds : np.ndarray, freqs : np.ndarray ):
 
-        i_largestVal = HelpClass_PeakAnalysis.get_indexLargestValue_nextFam( fam, psds, freqs )
-        n_includePerSide = HelpClass_PeakAnalysis.N_INCLUDE_PER_SIDE
-        n_ignore = HelpClass_PeakAnalysis.N_IGNORE
+        i_largestVal = HelpClass_PeakAnalysis.get_indexLargestValue_nextFam( fam, trialType, psds, freqs )
+        toleratedPeakDeviation, n_includePerSide, n_ignore = HelpClass_PeakAnalysis.get_peakAnalysisParams( trialType )
         
 
         i_incl_u2 = i_largestVal + n_ignore + n_includePerSide   #  erste includierte upperRange

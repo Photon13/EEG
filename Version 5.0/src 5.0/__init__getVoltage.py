@@ -20,13 +20,13 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 4                     # <---            
-durchgang = "4"             # <---      
+pNr = 3                     # <---            
+durchgang = "3"             # <---      
 ###########################
 
 
 # SET PATHS:
-folderEEG : str = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files"
+folderEEG : str = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\rawEEG"
 
 pathVHDR : str = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp{durchgang}.vhdr"
 pathVMRK : str = folderEEG + f"\\participant{pNr}\\participant{pNr}_mainExp{durchgang}.vmrk"
@@ -52,7 +52,7 @@ bad_channels = []
 for i in range(1, 64+1):
     bad_channels.append(str(i))
 
-for ch in ["25", "13", "15"] :      # <---    
+for ch in ["14", "15"] :      # <---    
     bad_channels.remove(ch)  
 
 rawFull.drop_channels(bad_channels)
@@ -100,13 +100,12 @@ if( n_componentsICA != None and methodICA != None and seed != None ):
     ica.fit(rawFull)  # bad segments that were marked in the EEG signal will be excluded.
     #ica.plot_sources(rawFull)
     ica.apply(rawFull)
-
 ###########################
 
 
 # RE-REFERENCING:
-recordingElectrodes = ["25"]               # <---
-referenceElectrodes = ["13", "15"]          # <---
+recordingElectrodes = ["14"]               # <---
+referenceElectrodes = ["15"]          # <---
 
 rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes )[0]       #  <---
 ###########################
@@ -195,6 +194,10 @@ voltage_concatAllGoodBlocks, times_concatAllGoodBlocks = mne.io.Raw.get_data(
     units         = "V",
 )
 voltage_concatAllGoodBlocks = voltage_concatAllGoodBlocks[0]
+
+
+
+
 
 paramDict = {                                                 
     "file_id"             : f"participant{pNr}_mainExp{durchgang}.vhdr",                                   

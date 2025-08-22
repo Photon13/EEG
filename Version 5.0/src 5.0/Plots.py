@@ -54,9 +54,9 @@ class Plots:
 
 
     @staticmethod
-    def plot_PSD( avg_pows : np.ndarray, freqs : np.ndarray, freqCombCond : str, trial : str, folderName : str, pNr : int, close_up : bool, save : bool ):
+    def plot_PSD( psds : np.ndarray, freqs : np.ndarray, freqCombCond : str, trial : str, folderName : str, pNr : int, close_up : bool, save : bool ):
         plt.figure(figsize=(10, 5))
-        plt.plot(   freqs, avg_pows, label="", color = "black" )
+        plt.plot(   freqs, psds, label="", color = "black" )
 
         for fam in BlockParams.FAMS_ABC_LIST:
             plt.axvline( fam, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 ) # Vertical lines

@@ -17,8 +17,8 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 4                         # <---            
-durchgang = "4"                     # <---      
+pNr = 3                         # <---            
+durchgang = "3"                     # <---      
 ###########################
 
 basisPath = f"d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\allResults\\"
@@ -32,7 +32,7 @@ allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD  )
 
 
 ###########                                                         
-index = 0           # <--- 
+index = 3           # <--- 
 ###########
 
 

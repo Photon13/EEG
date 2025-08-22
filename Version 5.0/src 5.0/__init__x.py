@@ -20,9 +20,9 @@ COLOREND    = '\033[0m'
 
 
 ########################
-pNr, durchgang = 4, "4"     # <---
+pNr, durchgang = 3, "3"     # <---
 
-index = 0                   # <---
+index = 3                   # <---
 ########################
 
 
@@ -31,21 +31,23 @@ pathAllResultsPSD  = basisPath + f"allResultsPSD_participant{pNr}_mainExp{durchg
 allResultsPSD  = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
 
 print( COLORRED + f"\nparticipant{pNr}" + COLOREND )
+print( COLORRED + f"\nrecording electrodes {allResultsPSD[index]["recordingElectrodes"]}" + COLOREND )
+
 
 
 ########################    
 
-#Y.test_sigHigherThanNoise( allResultsPSD, index )    # <---
+Y.test_sigHigherThanNoise( allResultsPSD, index )    # <---
  
 ########################
 
 
 """
-freqs = allResultsPSD[index]["freqsDict"]["ABC_middle"]["trial1"]
-psds = allResultsPSD[index]["psdsDict"]["ABC_left"]["trial1"]
+freqs = allResultsPSD[index]["freqsDict"]["ABC_right"]["trial1"]
+psds = allResultsPSD[index]["psdsDict"]["ABC_right"]["trial1"]
 
 HelpClass_PeakAnalysis.inspect_rangeAroundFam( 
-    whichToPrint         = "freqs", 
+    whichToPrint         = "psds", 
     n_neighbours_perSide = 60, 
     fam                  = BlockParams.FAMS_ABC["FAM_C"], 
     freqs                = freqs, 
@@ -55,8 +57,8 @@ HelpClass_PeakAnalysis.inspect_rangeAroundFam(
 
 
 ########################                    # <---
-#trials = ["trial0"]
-trials = ["trial1", "trial2", "trial3"]       
+trials = ["trial0"]
+#trials = ["trial1", "trial2", "trial3"]       
 ########################
 
 
@@ -72,7 +74,7 @@ psdsTnT_perFreqCombCond : dict[dict] = PeaksTnT.get_psdsTnT_perFreqCombCond( psd
 psdsTnT_perCond         : dict[dict] = Y.convert_perFreqCombCond_to_perCond( psdsTnT_perFreqCombCond )
 allPeaksTnT             : dict[List] = Y.get_allPeaks( psdsTnT_perFreqCombCond )
 
-
+print(psdsTnT_perCond)
 
 ########################                            # <---
 print( COLORRED + f"\n{trials}\n" + COLOREND )
