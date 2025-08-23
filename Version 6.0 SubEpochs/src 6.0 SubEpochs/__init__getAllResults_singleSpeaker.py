@@ -26,17 +26,15 @@ COLOREND    = '\033[0m'
 
 def getallResults():
 
-    recordingElectrodes = ["14"]               # <---
+    recordingElectrodes = ["25"]               # <---
     referenceElectrodes = ["13", "15"]          # <---
 
     identifiers = [ 
-        #[13, "3"],
-        #[4, "4"],
-        #[3, "3"],
-        [2, "2"],
-        #[1, "1"],
+        [3, "3"],
+        [1, "1"],
     ]
 
+    epoching = False # <---
 
     ##############################################################################################
     
@@ -44,25 +42,18 @@ def getallResults():
     for idNr in range(len(identifiers)):
 
         pNr       = identifiers[idNr][0]
-        durchgang = identifiers[idNr][1] 
+        durchgang = identifiers[idNr][1]
 
-
-  
         folderEEG : str = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\EEG files\\rawEEG"
 
-        file_id = f"participant{pNr}_mainExp{durchgang}"
+        file_id = f"participant{pNr}_singleSpeaker"
 
         pathVHDR  : str = folderEEG + f"\\participant{pNr}\\{file_id}.vhdr"
         pathVMRK  : str = folderEEG + f"\\participant{pNr}\\{file_id}.vmrk"
-        pathBlockDict   = f"data\\blockDict\\participant{pNr}_blockDict.txt"
-
-        with open( pathBlockDict, "r" ) as f:
-            blockDict : dict[dict] = json.load(f)
-
 
         ##############################################################################################
 
-        typ = "threeSpeakers"
+        typ = "singleSpeaker"
 
         pathAllResultsVolt      = Paths.get_pathAllResultsVolt(      pNr, durchgang, typ )
         pathAllResultsPSD       = Paths.get_pathAllResultsPSD(       pNr, durchgang, typ )
@@ -79,9 +70,6 @@ def getallResults():
         allResults_sigPeaks = AllResults.loadFromPickle_allResults( pathAllResults_sigPeaks )
         allResults_snSpeaks = AllResults.loadFromPickle_allResults( pathAllResults_snSpeaks )
 
-        blocksInOrder_volt  = []
-        blocksInOrder_psds  = []
-        blocksInOrder_freqs = []
 
         ##############################################################################################
 
@@ -92,18 +80,19 @@ def getallResults():
         peakDict_sig = {}
         peakDict_snS = {}
 
-        poss_freqCombConds = BlockParams.get_possFreqCombConds()
-        for freqCombCond in poss_freqCombConds:
+        attentionArten = ["max_attention", "min_attention"]
+
+        for attentionArt in attentionArten:
             
-            voltDict[freqCombCond]     = []
-            psdsDict[freqCombCond]     = []
-            freqsDict[freqCombCond]    = []
-            peakDict_sig[freqCombCond] = {
+            voltDict[attentionArt]     = []
+            psdsDict[attentionArt]     = []
+            freqsDict[attentionArt]    = []
+            peakDict_sig[attentionArt] = {
                 "FAM_A" : [],
                 "FAM_B" : [],
                 "FAM_C" : []
             }
-            peakDict_snS[freqCombCond] = {
+            peakDict_snS[attentionArt] = {
                 "FAM_A" : [],
                 "FAM_B" : [],
                 "FAM_C" : []
@@ -142,7 +131,8 @@ def getallResults():
             bad_channels.append(str(i))
 
         used_channels = copy.deepcopy(recordingElectrodes)
-        used_channels.extend(referenceElectrodes)
+        if( referenceElectrodes != None ):
+            used_channels.extend(referenceElectrodes)
         for ch in used_channels :      # <---    
             bad_channels.remove(ch)  
 
@@ -161,16 +151,14 @@ def getallResults():
 
 
         # GET RAW_BLOCK RESP.:
-        for blockNr in range(72):
+        for i in range(2):
 
-            start     : float   = float( zBusses[ blockNr ] ) / float( rawFull.info["sfreq"] )
-            end       : float   = float( start + BlockParams.DEFAULT_BLOCK_LENGTH )
+            attentionArt = attentionArten[i]
+            duration_sec = int(60*2.5) #2.5 min
+
+            start     : float   = float( zBusses[ i ] ) / float( rawFull.info["sfreq"] )
+            end       : float   = float( start + duration_sec )
             rawBlock  : object  = rawFull.copy().crop(tmin = start, tmax = end)
-
-            freqComb  : str     = blockDict[f"block{blockNr}"]["freqComb"]
-            condition : str     = blockDict[f"block{blockNr}"]["condition"]
-
-            freqCombCond : str = f"{freqComb}_{condition}"
 
             voltage, times = mne.io.Raw.get_data(
                 rawBlock,
@@ -180,21 +168,22 @@ def getallResults():
             )
             voltage = voltage[0]
 
-            start = 1            # FIRSTMOST SAMPLE REMOVED (BECAUSE RAWBLOCK IS 15001 SAMPLES LONG)
-            end   = start + 5000 # 10 sec
 
-            while( end <= 15001 ): #len rawBlock
+            if(epoching == True):
+                start = 1              # FIRSTMOST SAMPLE REMOVED
+                end   = start + 5000   # 10 sec
+                while( end <= 75001 ): # len recording per attention type
+                    voltage_subArray = copy.deepcopy( voltage[start:end])
+                    voltDict[attentionArt].append(voltage_subArray)
+                    start = start + 2500  #verschiebe start um 5 sec (müsste 50% Überlapp entsprechen)
+                    end   = start + 5000  #10 sec       
+                # ALLE SUBARRAYS 5000 SAMPLES (=10 SEC) LANG
+                # PER RAWBLOCK 5 INTERVALLE VON JE 10 SECS
+            else:
+                start = 1 # FIRSTMOST SAMPLE REMOVED
+                end   = start + int( rawBlock.info["sfreq"]*duration_sec ) # 2.5 min
                 voltage_subArray = copy.deepcopy( voltage[start:end])
-                voltDict[freqCombCond].append(voltage_subArray)
-                start = start + 2500  #verschiebe start um 5 sec (müsste 50% Überlapp entsprechen)
-                end   = start + 5000  #10 sec  
-
-                ##
-                blocksInOrder_volt.append(voltage_subArray) 
-                ##
-                  
-            # ALLE SUBARRAYS 5000 SAMPLES (=10 SEC) LANG
-            # PER RAWBLOCK 5 INTERVALLE VON JE 10 SECS
+                voltDict[attentionArt].append(voltage_subArray)
 
 
 
@@ -202,9 +191,9 @@ def getallResults():
 
         
 
-        for freqCombCond in voltDict:
-            for intervalNr in range( len(voltDict[freqCombCond]) ):
-                voltage = voltDict[freqCombCond][intervalNr]
+        for attentionArt in voltDict:
+            for intervalNr in range( len(voltDict[attentionArt]) ):
+                voltage = voltDict[attentionArt][intervalNr]
 
                 freqs, psds = scipy.signal.periodogram(
                     x       = voltage,
@@ -212,26 +201,17 @@ def getallResults():
                     scaling = "density" 
                 )
 
-                psdsDict[freqCombCond].append(  psds  )
-                freqsDict[freqCombCond].append( freqs )
+                psdsDict[attentionArt].append(  psds  )
+                freqsDict[attentionArt].append( freqs )
 
-        ##
-        for voltage in blocksInOrder_volt:
-            freqs, psds = scipy.signal.periodogram(
-                x       = voltage,
-                fs      = rawFull.info["sfreq"],
-                scaling = "density" 
-            )
-            blocksInOrder_psds.append(psds)
-            blocksInOrder_freqs.append(freqs)
-        ##
+        
 
 
-        for freqCombCond in psdsDict:
-            for intervalNr in range( len(psdsDict[freqCombCond]) ):
+        for attentionArt in psdsDict:
+            for intervalNr in range( len(psdsDict[attentionArt]) ):
 
-                psds  = psdsDict[freqCombCond][intervalNr]
-                freqs = freqsDict[freqCombCond][intervalNr]
+                psds  = psdsDict[attentionArt][intervalNr]
+                freqs = freqsDict[attentionArt][intervalNr]
 
                 for famName in BlockParams.FAMS_ABC:
                     fam                = BlockParams.FAMS_ABC[famName]
@@ -241,8 +221,8 @@ def getallResults():
                     statistic, p_value = stats.f_oneway( psd_peak, psds_neighbours )
 
                     if( 0.05 >= round(p_value, 1) ):
-                        peakDict_sig[freqCombCond][famName].append(psd_peak)
-                    peakDict_snS[freqCombCond][famName].append(psd_peak)
+                        peakDict_sig[attentionArt][famName].append(psd_peak)
+                    peakDict_snS[attentionArt][famName].append(psd_peak)
 
 
 
@@ -251,7 +231,9 @@ def getallResults():
 
 
         info = {                                                 
-            "file_id"             : f"participant{pNr}_mainExp{durchgang}.vhdr",                                   
+            "file_id"             : f"participant{pNr}_mainExp{durchgang}.vhdr",
+
+            "epoching"            : epoching,                                   
         
             "recordingElectrodes" : recordingElectrodes,
             "referenceElectrodes" : referenceElectrodes,     
@@ -276,11 +258,6 @@ def getallResults():
         newEntry_allResults_sigPeaks["peakDict_sig"] = peakDict_sig
         newEntry_allResults_snSpeaks["peakDict_snS"] = peakDict_snS
 
-        ##
-        newEntry_allResultsVolt["blocksInOrder_volt"] = blocksInOrder_volt
-        newEntry_allResultPSD["blocksInOrder_psds"]   = blocksInOrder_psds
-        newEntry_allResultPSD["blocksInOrder_freqs"]  = blocksInOrder_freqs
-        ##
 
 
         allResultsVolt.append(      newEntry_allResultsVolt      )

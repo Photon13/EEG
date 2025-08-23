@@ -18,8 +18,8 @@ COLOREND    = '\033[0m'
 
 
 # CHOOSE PARTICIPANT:
-pNr = 3                     # <---            
-durchgang = "3"             # <---      
+pNr = 1                     # <---            
+durchgang = "1"             # <---      
 ###########################
 
 
@@ -50,7 +50,7 @@ rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
 
 
 # SET REFERENCE (OPTIONAL):
-rawFull = mne.set_eeg_reference( rawFull, ref_channels = ["13", "15"])[0]     # <---
+#rawFull = mne.set_eeg_reference( rawFull, ref_channels = ["13", "15"])[0]     # <---
 ###########################
 
 

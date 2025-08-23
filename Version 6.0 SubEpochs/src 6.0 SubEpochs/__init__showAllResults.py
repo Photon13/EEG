@@ -11,20 +11,23 @@ COLOREND    = '\033[0m'
 
 
 
-pNr, durchgang = 4,"4"
+pNr, durchgang = 2,"2"
+
+#typ = "singleSpeaker"
+typ = "threeSpeakers"
 
 
 
+pathAllResultsPSD  = Paths.get_pathAllResultsPSD(pNr, durchgang, typ )
+print(COLORGREEN + "allResultsPSD" + COLOREND)
+allResultsPSD = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
 
-#pathAllResultsSubEpochsVolt = Paths.get_pathAllResultsSubEpochsVolt(pNr, durchgang) 
-#print(COLORPURPLE + "allResultsSubEpochsVolt" + COLOREND)
-#AllResults.showAllResults( pathAllResultsSubEpochsVolt )
+AllResults.showAllResults( pathAllResultsPSD )
 
+#print( len(allResultsPSD[0]["psdsDict"]["min_attention"]))
+#print( allResultsPSD[0]["psdsDict"]["min_attention"])
 
-#pathAllResultsSubEpochsPSD  = Paths.get_pathAllResultsSubEpochsPSD(pNr, durchgang)
-#print(COLORGREEN + "allResultsSubEpochsPSD" + COLOREND)
-#AllResults.showAllResults( pathAllResultsSubEpochsPSD )
+#for entry in allResultsPSD[1]["freqsDict"]["min_attention"][0]:
+#    if( 35.0 <= entry <= 37.0):
+#        print(entry)
 
-pathAllResultsSigPeaks = Paths.get_pathAllResultsSigPeaks(pNr, durchgang)
-print(COLORYELLOW + "allResultsSigPeaks" + COLOREND)
-AllResults.showAllResults( pathAllResultsSigPeaks )
