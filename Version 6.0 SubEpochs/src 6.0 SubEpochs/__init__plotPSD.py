@@ -24,47 +24,43 @@ index = 1                   # <---
 ########################
 
 #typ = "singleSpeaker"      # <---
-#typ = "threeSpeakers"
-typ = "blocksInOrder"
+typ = "threeSpeakers"
 
 ########################
 close_up = True            # <---
-save     = False             # <---
+save     = True             # <---
 ########################
 
 
 
 
 folderName = "d:\\Maik\\Studium\\Biologie Bachelor\\Bachelorarbeit\\amplitudeModulation\\bachelorThesisText\\RESULTS\\reinmüllOrdner"
-if( len( os.listdir(folderName) ) > 0 ):
-    print( COLORRED + "CAVE: 'reinmüllOrdner' is not empty! " + COLOREND )
-    while True:
-        inp = input("Continue? [yes]: ")
-        if( inp.lower() == "yes" ):
-            break
+if( save == True ):
+    if( len( os.listdir(folderName) ) > 0 ):
+        print( COLORRED + "CAVE: 'reinmüllOrdner' is not empty! " + COLOREND )
+        while True:
+            inp = input("Continue anyway? [yes]: ")
+            if( inp.lower() == "yes" ):
+                break
 
+   
 
+pathAllResultsPSD  = Paths.get_pathAllResultsPSD( pNr, durchgang, typ )            
+allResultsPSD      = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
 
+for freqCombCond in allResultsPSD[index]["psdsDict"]:
+    for intervalNr in range( len(allResultsPSD[index]["psdsDict"][freqCombCond]) ):
 
-
-
-if( typ == "blocksInOrder" ):
-    pathAllResultsPSD  = Paths.get_pathAllResultsPSD( pNr, durchgang, "threeSpeakers")
-    allResultsPSD      = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
-
-    sec = 0
-    blockNr = 0
-    for i in range( len( allResultsPSD[index]["blocksInOrder_psds"] ) ):
-        psds  = allResultsPSD[index]["blocksInOrder_psds"][i]
-        freqs = allResultsPSD[index]["blocksInOrder_psds"][i]
+        psds  = allResultsPSD[index]["psdsDict"][freqCombCond][intervalNr]
+        freqs = allResultsPSD[index]["freqsDict"][freqCombCond][intervalNr]
 
         recordingElectrodes = allResultsPSD[index]["recordingElectrodes"]
         referenceElectrodes = allResultsPSD[index]["referenceElectrodes"]
         Plots.plot_PSD(
             psds, 
             freqs, 
-            f"block{blockNr}",
-            f"start sec{sec}",
+            freqCombCond,
+            intervalNr,
             recordingElectrodes,
             referenceElectrodes,
             folderName, 
@@ -72,36 +68,3 @@ if( typ == "blocksInOrder" ):
             close_up,   
             save
         )
-        if( sec == 20 ):
-            sec = 0
-            blockNr += 1
-
-
-
-
-
-else:    
-
-    pathAllResultsPSD  = Paths.get_pathAllResultsPSD( pNr, durchgang, typ )            
-    allResultsPSD      = AllResults.loadFromPickle_allResults( pathAllResultsPSD )
-
-    for freqCombCond in allResultsPSD[index]["psdsDict"]:
-        for intervalNr in range( len(allResultsPSD[index]["psdsDict"][freqCombCond]) ):
-
-            psds  = allResultsPSD[index]["psdsDict"][freqCombCond][intervalNr]
-            freqs = allResultsPSD[index]["freqsDict"][freqCombCond][intervalNr]
-
-            recordingElectrodes = allResultsPSD[index]["recordingElectrodes"]
-            referenceElectrodes = allResultsPSD[index]["referenceElectrodes"]
-            Plots.plot_PSD(
-                psds, 
-                freqs, 
-                freqCombCond,
-                intervalNr,
-                recordingElectrodes,
-                referenceElectrodes,
-                folderName, 
-                pNr, 
-                close_up,   
-                save
-            )

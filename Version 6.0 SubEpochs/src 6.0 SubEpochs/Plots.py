@@ -78,7 +78,7 @@ class Plots:
         elif( close_up == True ):
             min_f, max_f, step = 35.0, 45.0, 1.0
             #min_f, max_f, step = 42.5, 43.5, 0.1
-            min_psd, max_psd = -1e-13, 0.5*1e-8
+            min_psd, max_psd = -1e-13, 0.5*1e-11
             #participant3 : 0.5*1e-10 und 0.5*1e-11
 
 
@@ -106,7 +106,7 @@ class Plots:
 
 
     @staticmethod
-    def boxplot( data : dict, title : str, participantNr : int, ylabel : str, xlabel : str, axhline : float | None ) -> None:
+    def boxplot( data : dict, title : str, ylabel : str, xlabel : str, axhline : float | None ) -> None:
 
         labels = data.keys()
         oldTicks = list( range(1, len(labels)+1 ) )
@@ -115,6 +115,7 @@ class Plots:
         for label in labels:
             boxes.append( data[label] )
 
+        plt.figure(figsize=(7, 5.5)) #plt.rcParams["figure.figsize"] = (15,10) ?
         plt.boxplot( 
             boxes,
             showmeans    = True,
@@ -129,9 +130,7 @@ class Plots:
         label_fontSize = 15
         tick_fontSize = 13
 
-        plt.title( f"{title}\n---Participant {participantNr}---", fontsize=title_fontSize, fontweight='bold', pad=10 )
-        #plt.rcParams["figure.figsize"] = (15,10)
-        #plt.text( 2.1, 4.35, f"Participant {participantNr}", fontsize=12 )
+        plt.title( f"{title}\n", fontsize=title_fontSize, fontweight='bold', pad=10 )
 
         plt.ylabel( ylabel, fontsize=label_fontSize )
         plt.xlabel( xlabel, fontsize=label_fontSize )

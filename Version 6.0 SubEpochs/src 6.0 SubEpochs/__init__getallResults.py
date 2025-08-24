@@ -26,15 +26,15 @@ COLOREND    = '\033[0m'
 
 def getallResults():
 
-    recordingElectrodes = ["14"]               # <---
+    recordingElectrodes = ["25"]               # <---
     referenceElectrodes = ["13", "15"]          # <---
 
     identifiers = [ 
-        #[13, "3"],
-        #[4, "4"],
-        #[3, "3"],
+        [13, "3"],
+        [4, "4"],
+        [3, "3"],
         [2, "2"],
-        #[1, "1"],
+        [1, "1"],
     ]
 
 
@@ -142,7 +142,8 @@ def getallResults():
             bad_channels.append(str(i))
 
         used_channels = copy.deepcopy(recordingElectrodes)
-        used_channels.extend(referenceElectrodes)
+        if( referenceElectrodes != None ):
+            used_channels.extend(referenceElectrodes)
         for ch in used_channels :      # <---    
             bad_channels.remove(ch)  
 
@@ -151,7 +152,8 @@ def getallResults():
 
 
         # RE-REFERENCING:
-        rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes )[0]
+        if( referenceElectrodes != None ):
+            rawFull = mne.set_eeg_reference( rawFull, ref_channels = referenceElectrodes )[0]
         ###########################
 
         # GET Z-BUSSE:

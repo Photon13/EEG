@@ -11,7 +11,7 @@ COLOREND    = '\033[0m'
 
 
 
-pNr, durchgang = 2,"2"
+pNr, durchgang = 3,"3"
 
 #typ = "singleSpeaker"
 typ = "threeSpeakers"

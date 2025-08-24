@@ -45,7 +45,7 @@ class Konversion:
             fam_targetLMR = ["FAM_RIGHT"]
 
         elif( cond == "both"):
-            fam_targetLMR = ["FAM_LEFT", "FAM_BOTH"]
+            fam_targetLMR = ["FAM_LEFT", "FAM_RIGHT"]
 
         famsLMR = ["FAM_LEFT", "FAM_MIDDLE", "FAM_RIGHT"]
         fam_nonTargetLMR = copy.deepcopy( famsLMR )
