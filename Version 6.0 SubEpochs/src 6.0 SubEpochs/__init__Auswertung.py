@@ -23,9 +23,9 @@ COLOREND    = '\033[0m'
 
 
 #####
-pNr = 3
-durchgang = "3"
-index = 1
+pNr = 1
+durchgang = "1"
+index = 2
 
 typ = "threeSpeakers"
 includeOnlySig = False
@@ -54,8 +54,8 @@ referenceElectrodes = allResults_sigPeaks[index]["referenceElectrodes"]
 if( verbosePlots == False ):
     info = ""
 else:
-    info = f"participant{pNr}"
-    info = info + f"\n\n(includeOnlySig {includeOnlySig})"
+    info = f"\n\nparticipant{pNr}"
+    info = info + f"\n(includeOnlySig {includeOnlySig})"
     info = info + f"\n{recordingElectrodes} VS {referenceElectrodes}"
 
 
@@ -64,6 +64,9 @@ else:
 
 
 #Auswertung.famABC_VS_famABC(allResults, info)
-Auswertung.famLMR_VS_famLMR(allResults, info)
-
+#Auswertung.famLMR_VS_famLMR(allResults, info)
 #SCHEINEN BEIDE ZU FUNZEN
+
+
+#Auswertung.famLMR_VS_famLMR_perCond( allResults, info, targetPos = "middle" )
+Auswertung.cond_VS_cond_perfamLMR( allResults, info, "famMiddle" )

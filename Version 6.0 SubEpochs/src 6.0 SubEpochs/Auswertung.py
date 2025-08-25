@@ -1,6 +1,7 @@
 from AllResults import AllResults
 from BlockParams import BlockParams
 from HelpClass_PeakAnalysis import HelpClass_PeakAnalysis
+from HelpClass_Auswertung import HelpClass_Auswertung
 from Konversion import Konversion
 from Statistics import Statistics
 from Plots import Plots
@@ -26,18 +27,11 @@ class Auswertung:
     @staticmethod #funzt scheinbar
     def famABC_VS_famABC( allResults : dict, info : str ):
 
-        data = {
-            "FAM_A" : [],
-            "FAM_B" : [],
-            "FAM_C" : []
-        }
-        counter = {
-            "FAM_A" : 0,      ##
-            "FAM_B" : 0,      ##
-            "FAM_C" : 0       ##
-        }
+        data    = HelpClass_Auswertung.getEmptyDict_data("famsABC")
+        counter = HelpClass_Auswertung.getEmptyDict_counter("famsABC")
 
         for freqCombCond in allResults:
+            
             for famNameABC in allResults[freqCombCond]:
 
                 for peak in allResults[freqCombCond][famNameABC]:
@@ -46,10 +40,17 @@ class Auswertung:
 
 
         if( info != "" and info != " " ):
-            info = info + f"\n\nfamA: {counter["FAM_A"]}  famB: {counter["FAM_B"]}  famC: {counter["FAM_C"]}"    ##
+            info = HelpClass_Auswertung.addToInfo_counter( counter, info )
 
 
         Statistics.test_sigDifference( data )
+
+
+        #Rename data keys (and thus x-axis labels):
+        for letter in ["A", "B", "C"]:
+            data[f"fam{letter}"] = data[f"FAM_{letter}"]
+            del data[f"FAM_{letter}"]
+
         Plots.boxplot( 
             data          = data, 
             title         = f"famA VS famB VS famC",        ##
@@ -64,41 +65,32 @@ class Auswertung:
 
     @staticmethod #funzt scheinbar
     def famLMR_VS_famLMR( allResults : dict, info : str ):
-        data = {
-            "FAM_LEFT"   : [],
-            "FAM_MIDDLE" : [],
-            "FAM_RIGHT"  : []
-        }
-        counter = {
-            "FAM_LEFT"   : [0,0,0],     ##
-            "FAM_MIDDLE" : [0,0,0],     ##
-            "FAM_RIGHT"  : [0,0,0]      ##
-        }
-        for freqCombCond in allResults:
-            for famNameLMR in ["FAM_LEFT", "FAM_MIDDLE", "FAM_RIGHT"]:
 
+        data = HelpClass_Auswertung.getEmptyDict_data("famsLMR")
+        counter = HelpClass_Auswertung.getEmptyDict_counter("famsLMRABC")
+
+        for freqCombCond in allResults:
+
+            for famNameLMR in ["FAM_LEFT", "FAM_MIDDLE", "FAM_RIGHT"]:
                 famNameABC = Konversion.get_convertedFamName(freqCombCond, famNameLMR)  ##
+
                 for peak in allResults[freqCombCond][famNameABC]:
                     data[famNameLMR].append(peak)
-
-                    if( famNameABC == "FAM_A" ):
-                        counter[famNameLMR][0] +=1
-                    elif( famNameABC == "FAM_B" ):
-                        counter[famNameLMR][1] +=1
-                    elif( famNameABC == "FAM_C" ):
-                        counter[famNameLMR][2] +=1
-
-        for famNameLMR in counter:                                                                     ## 
-            n_peaks = counter[famNameLMR][0] + counter[famNameLMR][1] + counter[famNameLMR][2]         ## 
-            for j in range( 3 ):                                                                       ##
-                counter[famNameLMR][j] = round( (float(counter[famNameLMR][j]) / float(n_peaks)), 2 )  ##
+                    counter[famNameLMR][famNameABC] +=1
 
 
         if( info != "" and info != " " ):
-            info = info + f"\n\nleft: {counter["FAM_LEFT"]} \nmiddle: {counter["FAM_MIDDLE"]} \nright: {counter["FAM_RIGHT"]}"      ##
+            info = HelpClass_Auswertung.addToInfo_counter( counter, info )
 
 
         Statistics.test_sigDifference( data )
+
+
+        #Rename data keys (and thus x-axis labels):
+        for pos in ["left", "middle", "right"]:
+            data[f"fam{pos.capitalize()}\n"] = data[f"FAM_{pos.upper()}"]
+            del data[f"FAM_{pos.upper()}"]
+
         Plots.boxplot( 
             data          = data, 
             title         = f"famLeft VS famMiddle VS famRight",    ##
@@ -109,3 +101,80 @@ class Auswertung:
 
 
 #########################################################################################################################################################################
+#########################################################################################################################################################################
+#########################################################################################################################################################################
+
+    @staticmethod
+    def famLMR_VS_famLMR_perCond( allResults : dict, info : str, targetPos : str ):
+
+        data    = HelpClass_Auswertung.getEmptyDict_data("famsLMR")
+        counter = HelpClass_Auswertung.getEmptyDict_counter("famsLMRABC")
+        
+        for freqCombCond in allResults:
+            cond = str(re.findall(r"(left|middle|right|both)", freqCombCond)[0])
+
+            for pos in ["left", "middle", "right"]:
+                if( cond == targetPos.lower() ):
+                    famABC   : List = Konversion.get_convertedFamName( freqCombCond, f"FAM_{pos.upper()}"  )
+
+                    for peak in allResults[freqCombCond][famABC]:
+                        data[f"FAM_{pos.upper()}"].append(peak)
+                        counter[f"FAM_{pos.upper()}"][famABC] +=1
+
+        
+        if( info != "" and info != " " ):
+            info = HelpClass_Auswertung.addToInfo_counter( counter, info )
+
+
+        Statistics.test_sigDifference( data )
+
+
+        #Rename data keys (and thus x-axis labels):
+        for pos in ["left", "middle", "right"]:
+            if( pos == targetPos.lower() ):
+                targetTyp = "target"
+            else:
+                targetTyp = "nonTarget"
+
+            data[f"fam{pos.capitalize()}\n({targetTyp})"] = data[f"FAM_{pos.upper()}"]
+            del data[f"FAM_{pos.upper()}"]
+
+        Plots.boxplot( 
+            data          = data, 
+            title         = f"target = {targetPos}",    ##
+            ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+            xlabel        = f"\nPosition{info}", 
+            axhline       = None
+        )
+
+#########################################################################################################################################################################
+
+    def cond_VS_cond_perfamLMR( allResults : dict, info : str, famLMR : str ):
+
+        data    = HelpClass_Auswertung.getEmptyDict_data("cond")
+        counter = HelpClass_Auswertung.getEmptyDict_counter("famsCondABC")
+
+        for freqCombCond in allResults:
+            cond = str( re.findall(r"(left|middle|right|both)", freqCombCond)[0] )
+            pos = str( re.findall(r"(Left|Middle|Right)", famLMR)[0] )
+
+            famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_{pos.upper()}")
+
+            for peak in allResults[freqCombCond][famNameABC]:
+                    data[cond].append(peak)
+                    counter[cond][famNameABC] +=1
+
+
+        if( info != "" and info != " " ):
+            info = HelpClass_Auswertung.addToInfo_counter( counter, info )
+
+
+        Statistics.test_sigDifference( data )
+
+        Plots.boxplot( 
+            data          = data, 
+            title         = f"{famLMR} per Condition",    ##
+            ylabel        = r"$PSD$ [$\frac{V^{2}}{Hz}$]", 
+            xlabel        = f"\nPosition{info}", 
+            axhline       = None
+        )
