@@ -128,9 +128,9 @@ class Plots:
 
         title_fontSize = 17
         label_fontSize = 15
-        tick_fontSize = 13
+        tick_fontSize  = 13
 
-        plt.title( f"{title}\n", fontsize=title_fontSize, fontweight='bold', pad=10 )
+        plt.title( f"{title}\n\n", fontsize=title_fontSize, fontweight='bold', pad=10 )
 
         plt.ylabel( ylabel, fontsize=label_fontSize )
         plt.xlabel( xlabel, fontsize=label_fontSize )

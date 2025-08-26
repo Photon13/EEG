@@ -42,7 +42,7 @@ class F_Test:
 
                     statistic, p_value = stats.f_oneway( psd_peak, psds_neighbours )
 
-                    if( 0.05 > round(p_value, 1) ):
+                    if( 0.05 > p_value ):
                         count_sig_fCC[freqCombCond] +=1
                         count_gesSig+= 1
                     else:

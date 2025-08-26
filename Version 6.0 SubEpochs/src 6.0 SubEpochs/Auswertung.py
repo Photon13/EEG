@@ -58,13 +58,14 @@ class Auswertung:
             xlabel        = f"\nPosition{info}", 
             axhline       = None
         )
+        print("\n\n\n\n\n")
 
 
     #########################################################################################################################################################################
 
 
     @staticmethod #funzt scheinbar
-    def famLMR_VS_famLMR( allResults : dict, info : str ):
+    def famLMR_VS_famLMR( allResults : dict, info : str, famsToUseABC : List[str], ):
 
         data = HelpClass_Auswertung.getEmptyDict_data("famsLMR")
         counter = HelpClass_Auswertung.getEmptyDict_counter("famsLMRABC")
@@ -73,10 +74,10 @@ class Auswertung:
 
             for famNameLMR in ["FAM_LEFT", "FAM_MIDDLE", "FAM_RIGHT"]:
                 famNameABC = Konversion.get_convertedFamName(freqCombCond, famNameLMR)  ##
-
-                for peak in allResults[freqCombCond][famNameABC]:
-                    data[famNameLMR].append(peak)
-                    counter[famNameLMR][famNameABC] +=1
+                if( famNameABC in famsToUseABC ):
+                    for peak in allResults[freqCombCond][famNameABC]:
+                        data[famNameLMR].append(peak)
+                        counter[famNameLMR][famNameABC] +=1
 
 
         if( info != "" and info != " " ):
@@ -98,6 +99,7 @@ class Auswertung:
             xlabel        = f"\nPosition{info}", 
             axhline       = None
         )
+        print("\n\n\n\n\n")
 
 
 #########################################################################################################################################################################
@@ -105,7 +107,7 @@ class Auswertung:
 #########################################################################################################################################################################
 
     @staticmethod
-    def famLMR_VS_famLMR_perCond( allResults : dict, info : str, targetPos : str ):
+    def famLMR_VS_famLMR_perCond( allResults : dict, info : str, famsToUseABC : List[str], targetPos : str ):
 
         data    = HelpClass_Auswertung.getEmptyDict_data("famsLMR")
         counter = HelpClass_Auswertung.getEmptyDict_counter("famsLMRABC")
@@ -115,11 +117,11 @@ class Auswertung:
 
             for pos in ["left", "middle", "right"]:
                 if( cond == targetPos.lower() ):
-                    famABC   : List = Konversion.get_convertedFamName( freqCombCond, f"FAM_{pos.upper()}"  )
-
-                    for peak in allResults[freqCombCond][famABC]:
-                        data[f"FAM_{pos.upper()}"].append(peak)
-                        counter[f"FAM_{pos.upper()}"][famABC] +=1
+                    famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_{pos.upper()}")
+                    if( famNameABC in famsToUseABC ):
+                        for peak in allResults[freqCombCond][famNameABC]:
+                            data[f"FAM_{pos.upper()}"].append(peak)
+                            counter[f"FAM_{pos.upper()}"][famNameABC] +=1
 
         
         if( info != "" and info != " " ):
@@ -146,23 +148,24 @@ class Auswertung:
             xlabel        = f"\nPosition{info}", 
             axhline       = None
         )
+        print("\n\n\n\n\n")
 
 #########################################################################################################################################################################
 
-    def cond_VS_cond_perfamLMR( allResults : dict, info : str, famLMR : str ):
+    def cond_VS_cond_perfamLMR( allResults : dict, info : str, famsToUseABC : List[str], famLMR : str ):
 
         data    = HelpClass_Auswertung.getEmptyDict_data("cond")
         counter = HelpClass_Auswertung.getEmptyDict_counter("famsCondABC")
 
         for freqCombCond in allResults:
             cond = str( re.findall(r"(left|middle|right|both)", freqCombCond)[0] )
-            pos = str( re.findall(r"(Left|Middle|Right)", famLMR)[0] )
+            pos  = str( re.findall(r"(Left|Middle|Right)", famLMR)[0] )
 
             famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_{pos.upper()}")
-
-            for peak in allResults[freqCombCond][famNameABC]:
-                    data[cond].append(peak)
-                    counter[cond][famNameABC] +=1
+            if( famNameABC in famsToUseABC ):
+                for peak in allResults[freqCombCond][famNameABC]:
+                        data[cond].append(peak)
+                        counter[cond][famNameABC] +=1
 
 
         if( info != "" and info != " " ):
@@ -178,3 +181,4 @@ class Auswertung:
             xlabel        = f"\nPosition{info}", 
             axhline       = None
         )
+        print("\n\n\n\n\n")

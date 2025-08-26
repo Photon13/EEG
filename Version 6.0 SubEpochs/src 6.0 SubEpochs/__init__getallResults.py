@@ -26,8 +26,8 @@ COLOREND    = '\033[0m'
 
 def getallResults():
 
-    recordingElectrodes = ["25"]               # <---
-    referenceElectrodes = ["13", "15"]          # <---
+    recordingElectrodes = ["8"]               # <---
+    referenceElectrodes = ["15"]          # <---
 
     identifiers = [ 
         [13, "3"],
@@ -242,7 +242,7 @@ def getallResults():
                     psd_peak           = psds[i_largestVal]
                     statistic, p_value = stats.f_oneway( psd_peak, psds_neighbours )
 
-                    if( 0.05 >= round(p_value, 1) ):
+                    if( 0.05 >= p_value ):
                         peakDict_sig[freqCombCond][famName].append(psd_peak)
                     peakDict_snS[freqCombCond][famName].append(psd_peak)
 
