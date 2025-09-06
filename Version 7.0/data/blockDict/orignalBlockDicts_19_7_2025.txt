@@ -1,0 +1,10 @@
+Original BlockDicts sind vom 19.07.2025.
+
+Stand: Direkt nach Datenanalyse zweites EEG participant0 erstellt (erstes EEG war maik_pilot).
+BlockDicts gehören zu BrainVisionRecorder Version 3.0 src files.
+Die amplitudeModulation programs sind noch auf lab PC weil push auf github fehlgeschlagen war.
+BlockDicts sollten kompatibel sein mit "to ampMod programms\\mainNEW.py".
+
+Anmerkung: Das blockDict für participant0 unterscheidet sich von den anderen,
+weil hier das alte Experiment-Setup verwendet wurde (n_blocks = 16, konstante fLMR).
+Vertex Elektrode wurde bei participant 0 EEG 2 mittig auf die Stirn geklebt.

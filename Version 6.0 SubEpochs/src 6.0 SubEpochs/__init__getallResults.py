@@ -26,8 +26,8 @@ COLOREND    = '\033[0m'
 
 def getallResults():
 
-    recordingElectrodes = ["8"]               # <---
-    referenceElectrodes = ["15"]          # <---
+    recordingElectrodes = ["20"]               # <---
+    referenceElectrodes = ["13","15"]          # <---
 
     identifiers = [ 
         [13, "3"],
@@ -182,14 +182,15 @@ def getallResults():
             )
             voltage = voltage[0]
 
+            len_interval = 5000  # 10 sec
             start = 1            # FIRSTMOST SAMPLE REMOVED (BECAUSE RAWBLOCK IS 15001 SAMPLES LONG)
-            end   = start + 5000 # 10 sec
+            end   = start + len_interval
 
             while( end <= 15001 ): #len rawBlock
                 voltage_subArray = copy.deepcopy( voltage[start:end])
                 voltDict[freqCombCond].append(voltage_subArray)
-                start = start + 2500  #verschiebe start um 5 sec (müsste 50% Überlapp entsprechen)
-                end   = start + 5000  #10 sec  
+                start = start + int(len_interval/2) #verschiebe start (50% Überlapp)
+                end   = start + len_interval   
 
                 ##
                 blocksInOrder_volt.append(voltage_subArray) 

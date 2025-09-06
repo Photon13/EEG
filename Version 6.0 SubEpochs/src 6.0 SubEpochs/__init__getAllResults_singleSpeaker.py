@@ -26,7 +26,7 @@ COLOREND    = '\033[0m'
 
 def getallResults():
 
-    recordingElectrodes = ["25"]               # <---
+    recordingElectrodes = ["20"]               # <---
     referenceElectrodes = ["13", "15"]          # <---
 
     identifiers = [ 
@@ -34,7 +34,7 @@ def getallResults():
         [1, "1"],
     ]
 
-    epoching = False # <---
+    epoching = True # <---
 
     ##############################################################################################
     
@@ -89,13 +89,13 @@ def getallResults():
             freqsDict[attentionArt]    = []
             peakDict_sig[attentionArt] = {
                 "FAM_A" : [],
-                "FAM_B" : [],
-                "FAM_C" : []
+                "FAM_B" : [], #redundant
+                "FAM_C" : []  #redundant
             }
             peakDict_snS[attentionArt] = {
                 "FAM_A" : [],
-                "FAM_B" : [],
-                "FAM_C" : []
+                "FAM_B" : [], #redundant
+                "FAM_C" : []  #redundant
             }
 
         ##############################################################################################

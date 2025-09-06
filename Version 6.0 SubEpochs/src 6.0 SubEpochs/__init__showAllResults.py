@@ -13,8 +13,8 @@ COLOREND    = '\033[0m'
 
 pNr, durchgang = 3,"3"
 
-#typ = "singleSpeaker"
-typ = "threeSpeakers"
+typ = "singleSpeaker"
+#typ = "threeSpeakers"
 
 
 

@@ -116,7 +116,7 @@ class Plots:
         for label in labels:
             boxes.append( data[label] )
 
-        plt.figure(figsize=(7, 5.5)) #plt.rcParams["figure.figsize"] = (15,10) ?
+        plt.figure(figsize=(6, 4.0)) #plt.rcParams["figure.figsize"] = (15,10) ?
         plt.boxplot( 
             boxes,
             showmeans    = True,
