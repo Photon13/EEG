@@ -257,36 +257,75 @@ class Auswertung:
 #########################################################################################################################################################################
 
     @staticmethod
-    def cond_VS_cond_perfamLMR( peakDict : dict, info : str, famsToUseABC : List[str], famLMR : str, pNr : int ):
-        print( COLORGREEN + f"\nparticipant{pNr}\n" + COLOREND)
-        print( COLORYELLOW + f"{famLMR} per Condition\n" + COLOREND)
-        print( COLORCYAN + f"Included fams: {famsToUseABC}" + COLOREND)
+    def cond_VS_cond_perFamLMR( peakDict : dict, info : str, pNr : int ):
 
-        data    = HelpClass_Auswertung.getEmptyDict_data("cond")
-        counter = HelpClass_Auswertung.getEmptyDict_counter("famsCondABC")
+        data_famLeft = {
+            "left"   : [],
+            "middle" : [],
+            "right"  : [],
+            "both"   : []
+        }
+        data_famMiddle = {
+            "left"   : [],
+            "middle" : [],
+            "right"  : [],
+            "both"   : []
+        }
+        data_famRight = {
+            "left"   : [],
+            "middle" : [],
+            "right"  : [],
+            "both"   : []
+        }
+        protoData = {}
+        for freqCombCond in peakDict:
+            protoData[freqCombCond] = {
+                "FAM_A" : 0,
+                "FAM_B" : 0,
+                "FAM_C" : 0
+            }
+
+        for freqCombCond in peakDict:
+            for famABC in peakDict[freqCombCond]:
+                meanFamA = np.mean( peakDict[freqCombCond]["FAM_A"] ) #Mittelt peaks aller intervalle und trials pro famABC
+                meanFamB = np.mean( peakDict[freqCombCond]["FAM_B"] )
+                meanFamC = np.mean( peakDict[freqCombCond]["FAM_C"] )
+                
+            protoData[freqCombCond]["FAM_A"] = meanFamA
+            protoData[freqCombCond]["FAM_B"] = meanFamB
+            protoData[freqCombCond]["FAM_C"] = meanFamC
+
 
         for freqCombCond in peakDict:
             cond = str( re.findall(r"(left|middle|right|both)", freqCombCond)[0] )
-            pos  = str( re.findall(r"(Left|Middle|Right)", famLMR)[0] )
+ 
+            famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_LEFT")
+            data_famLeft[cond].append( protoData[freqCombCond][famNameABC] )
 
-            famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_{pos.upper()}")
-            if( famNameABC in famsToUseABC ):
-                for peak in peakDict[freqCombCond][famNameABC]:
-                        data[cond].append(peak)
-                        counter[cond][famNameABC] +=1
+            famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_MIDDLE")
+            data_famMiddle[cond].append( protoData[freqCombCond][famNameABC] )
 
-
-        if( info != "" and info != " " ):
-            info = HelpClass_Auswertung.addToInfo_counter( counter, info )
+            famNameABC = Konversion.get_convertedFamName(freqCombCond, f"FAM_RIGHT")
+            data_famRight[cond].append( protoData[freqCombCond][famNameABC] )
 
 
-        Statistics.test_sigDifference( data )
 
-        Plots.boxplot( 
-            data          = data, 
-            title         = f"Participant {pNr}",    ##
-            ylabel        = "\nRelative Peak Height", 
-            xlabel        = f"\nCondition{info}", 
-            axhline       = None
-        )
-        print("\n\n\n\n\n")
+
+        dataLMR = [data_famLeft, data_famMiddle, data_famRight]
+        positions = ["famLeft", "famMiddle", "famRight"]
+        for j in range ( 3 ):
+            print( COLORGREEN + f"\nparticipant{pNr}\n" + COLOREND)
+            print( COLORYELLOW + f"{positions[j]} per Condition\n" + COLOREND)
+            print( COLORCYAN + f"All fams included." + COLOREND)
+
+            print( dataLMR[j] ) ##
+            Statistics.test_sigDifference( dataLMR[j] )
+
+            Plots.boxplot( 
+                data          = dataLMR[j], 
+                title         = f"Participant {pNr}",    ##
+                ylabel        = "\nRelative Peak Height", 
+                xlabel        = f"\nCondition{info}", 
+                axhline       = None
+            )
+            print("\n\n\n\n\n")

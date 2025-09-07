@@ -41,17 +41,16 @@ famsToUse_dict = {
 
 
 #####
-pNr = 4                 # <---
-durchgang = "4"
+pNr = 3                 # <---
+durchgang = "3"
 index = 0
 
 expType : str = "threeSpeakers"        
 #expType : str = "singleSpeaker"
 
-famsToUseABC : List[str] = ["FAM_A", "FAM_B", "FAM_C"]    # <---
-#famsToUseABC : List[str] = ["FAM_C"]  
+famsToUseABC : List[str] = ["FAM_A", "FAM_B", "FAM_C"]
 
-includeOnlySig : bool = False                    
+includeOnlySig : bool = True                    
 verbosePlots   : bool = False
 #####
 
@@ -84,6 +83,4 @@ else:
 #Auswertung.famABC_VS_famABC(peakDict, info, pNr)
 #Auswertung.famLMR_VS_famLMR(peakDict, info, famsToUseABC, pNr)
 
-Auswertung.cond_VS_cond_perfamLMR( peakDict, info, famsToUseABC, "famLeft", pNr )
-Auswertung.cond_VS_cond_perfamLMR( peakDict, info, famsToUseABC, "famMiddle", pNr )
-Auswertung.cond_VS_cond_perfamLMR( peakDict, info, famsToUseABC, "famRight", pNr )
+Auswertung.cond_VS_cond_perFamLMR( peakDict, info, pNr )
