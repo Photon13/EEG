@@ -30,11 +30,11 @@ def getallResults():
     referenceElectrodes = ["13","15"]          # <---
 
     identifiers = [ 
-        [13, "3"],
+        #[13, "3"],
         [4, "4"],
-        [3, "3"],
-        [2, "2"],
-        [1, "1"],
+        #[3, "3"],
+        #[2, "2"],
+        #[1, "1"],
     ]
 
 
@@ -117,6 +117,8 @@ def getallResults():
         rawFull = mne.io.read_raw_brainvision( vhdr_fname = pathVHDR, ignore_marker_types = True, preload = True )
         ################
 
+        
+
 
         # FILTERING:
         l_freq      = 1.0
@@ -128,6 +130,7 @@ def getallResults():
         rawFull = rawFull.filter( l_freq = l_freq, h_freq = h_freq )
         ###########################
 
+        rawFull.plot()
 
         # INDEPENDENT COMPONENT ANALYSIS:
         n_componentsICA = None  

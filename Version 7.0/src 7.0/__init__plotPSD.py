@@ -18,7 +18,7 @@ COLOREND    = '\033[0m'
 
 
 ########################
-pNr, durchgang = 3, "3"       # <---
+pNr, durchgang = 1, "1"       # <---
 
 index = 0                   # <---
 ########################
@@ -28,7 +28,7 @@ typ = "threeSpeakers"
 
 ########################
 close_up = True            # <---
-save     = False             # <---
+save     = True            # <---
 ########################
 
 
@@ -47,28 +47,30 @@ if( save == True ):
 
 pathAllResults  = Paths.get_pathAllResults( pNr, durchgang, typ )            
 allResults      = AllResults.loadFromPickle_allResults( pathAllResults )
+psdsInOrder = allResults[index]["psdsInOrder"]
 
-for freqCombCond in allResults[index]["psdsDict"]:
-    for intervalNr in range( len(allResults[index]["psdsDict"][freqCombCond]) ):
+times = []
+blockStart = 0
+for i in range( 72 ):
+    for j in range( 1, 5+1 ):
+        times.append( blockStart + j*5 )
+    blockStart += 30
 
-        # MONKEY PATCH:    
-        #freqCombCond = "ABC_both" #
-        #intervalNr   = 4          #
-        
-        psds  = allResults[index]["psdsDict"][freqCombCond][intervalNr]
-        freqs = allResults[index]["freqsDict"][freqCombCond][intervalNr]
+freqs = allResults[index]["freqsDict"]["ABC_left"][0]
 
-        recordingElectrodes = allResults[index]["recordingElectrodes"]
-        referenceElectrodes = allResults[index]["referenceElectrodes"]
-        Plots.plot_PSD(
-            psds, 
-            freqs, 
-            freqCombCond,
-            intervalNr,
-            recordingElectrodes,
-            referenceElectrodes,
-            folderName, 
-            pNr, 
-            close_up,   
-            save
-        )
+for i in range( len( psdsInOrder) ):
+    psds = psdsInOrder[i]
+    recordingElectrodes = allResults[index]["recordingElectrodes"]
+    referenceElectrodes = allResults[index]["referenceElectrodes"]
+    Plots.plot_PSD(
+        psds, 
+        freqs, 
+        "",
+        times[i],
+        recordingElectrodes,
+        referenceElectrodes,
+        folderName, 
+        pNr, 
+        close_up,   
+        save
+    )

@@ -116,7 +116,9 @@ class Plots:
         for label in labels:
             boxes.append( data[label] )
 
-        plt.figure(figsize=(6, 4.0)) #plt.rcParams["figure.figsize"] = (15,10) ?
+        plt.figure(figsize=(5, 4.0)) #plt.rcParams["figure.figsize"] = (15,10) ? #threeSp
+        #plt.figure(figsize=(7.5, 5.0)) #plt.rcParams["figure.figsize"] = (15,10) ? #singleSp VS threeSpe
+        
         plt.boxplot( 
             boxes,
             showmeans    = True,
@@ -131,8 +133,8 @@ class Plots:
         label_fontSize = 15
         tick_fontSize  = 13
 
-        plt.title( f"{title}\n\n", fontsize=title_fontSize, fontweight='bold', pad=10 )
-
+        plt.title( f"{title}\n\n", fontsize=title_fontSize, fontweight='bold', pad=20 )
+        
         plt.ylabel( ylabel, fontsize=label_fontSize )
         plt.xlabel( xlabel, fontsize=label_fontSize )
         plt.xticks( oldTicks, labels, fontsize = tick_fontSize )
@@ -145,6 +147,7 @@ class Plots:
             plt.axhline(y = axhline, color = "grey", linestyle = ":")
         
         plt.tight_layout(pad=1)
+        
         plt.show()
         inp = input("any ")
         plt.close()

@@ -23,17 +23,17 @@ COLOREND    = '\033[0m'
 
 
 identifiers = { 
-    #"participant4_mainExp4"  : [4, "4"],   #27 VS [13,15] -> index 3
+    "participant4_mainExp4"  : [4, "4"],   #27 VS [13,15] -> index 3
     "participant3_mainExp3"  : [3, "3"],   #20 VS [13,15] -> index 1
     "participant2_mainExp2"  : [2, "2"],   #20 VS [13,15] -> index 1
-    #"participant1_mainExp1"  : [1, "1"],  
+    "participant1_mainExp1"  : [1, "1"],  
 }
 
 indicesToUse = {
-    "participant4_mainExp4"  : 3, #27 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_A
-    "participant3_mainExp3"  : 1, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_C
-    "participant2_mainExp2"  : 1, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_C
-    "participant1_mainExp1"  : 1, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_A
+    "participant4_mainExp4"  : 0, #27 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_A
+    "participant3_mainExp3"  : 0, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_C
+    "participant2_mainExp2"  : 0, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_C
+    "participant1_mainExp1"  : 0, #20 VS [13,15] #höchste n_sigPeaks ges; und höchste n_sigPeaks FAM_A
 }
 
 typ = "threeSpeakers"
@@ -89,8 +89,8 @@ else:
 
 
 
-Auswertung.famABC_VS_famABC(allPart_peakDict_sig, info)
-Auswertung.famLMR_VS_famLMR(allPart_peakDict_sig, info, famsToUseABC)
+#Auswertung.famABC_VS_famABC(allPart_peakDict_sig, info)
+#Auswertung.famLMR_VS_famLMR(allPart_peakDict_sig, info, famsToUseABC)
 
 Auswertung.cond_VS_cond_perfamLMR( allPart_peakDict_sig, info, famsToUseABC, "famLeft" )
 Auswertung.cond_VS_cond_perfamLMR( allPart_peakDict_sig, info, famsToUseABC, "famMiddle" )

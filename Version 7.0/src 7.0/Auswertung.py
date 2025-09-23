@@ -27,91 +27,89 @@ class Auswertung:
 
     @staticmethod
     def plot_zeitlVerlaufPeaks( peaksInOrder : dict[List], famsToUseABC : List[str], expType : str, info : str, pNr : int ):
-        print( COLORGREEN + f"\nparticipant{pNr}\n" + COLOREND)
         title_fontSize = 17
         label_fontSize = 15
         tick_fontSize = 13
 
         ##
         if( expType == "singleSpeaker" ): #X-AXIS: SECONDS (MEAN TIME POINT INTERVAL)
-            peakList = peaksInOrder["FAM_A"]
-            n_intervals_perBlock = int( (150 - 5 )/ 5 ) #last interval missing bec it would be only 5 secs long
-            
-            timesList = []
-            t = 5 # 1st interval mean timepoint at 5 sec recording
-            interval = 1 #intervalNr
-            for i in range( 2*n_intervals_perBlock ):
-                timesList.append( t )
-                if( interval == n_intervals_perBlock ):
-                    t += 10  #jump to next block
-                    interval = 1 #reset interval nr
-                elif( interval < n_intervals_perBlock ):
-                    t += 5   #jump to next interval
-                    interval += 1
-                else:
-                    print(COLORRED + "Invalid interval! " + COLOREND + "Message from plot_zeitlVerlaufPeaks().")
+            times = []
+            blockStart = 0
+            for i in range( 2 ):
+                for j in range( 1, 29+1 ):
+                    times.append( blockStart + j*5 )
+                blockStart += 150
 
-            plt.figure(figsize=(10, 5))
-            plt.plot( timesList, peakList, label="", color = "black" )
-            
-            title = "Evolution of peak hight (singleSpeaker)"
-            plt.legend(loc="upper left")
+    
+        elif( expType == "threeSpeakers" ):
+            times = []
+            blockStart = 0
+            for i in range( 72 ):
+                for j in range( 1, 5+1 ):
+                    times.append( blockStart + j*5 )
+                blockStart += 30
 
-            for markerPosition in [ (150 - 5), (150 + 5) ]: #boundary between att and nonAtt
-                    plt.axvline( markerPosition, color='grey', linestyle=':', alpha=0.8, linewidth=3.0, zorder=0 )
-            
-       
+        peakList_famA = peaksInOrder["FAM_A"]
+        peakList_famB = peaksInOrder["FAM_B"]
+        peakList_famC = peaksInOrder["FAM_C"]
+
         
-        ##
-        elif( expType == "threeSpeakers" ): #X-AXIS: BLOCK NR
-            blockList = [] # block X: X.0, X.2 ... X.8
-            n_intervals_perBlock = 5
-            t = 0.0 + 1.0/6.0 # Mitte vom ersten Intervall ist bei 1/6 vom Block
-            interval = 1 #intervalNr
-            for i in range( 72*n_intervals_perBlock ):
-                print(t)
-                blockList.append( t )
-                if( interval == n_intervals_perBlock ):
-                    t += 2.0/6.0  #jump to next block
-                    interval = 1 #reset interval nr
-                elif( interval < n_intervals_perBlock ):
-                    t += 1.0/6.0   #jump to next interval
-                    interval += 1
-                else:
-                    print(COLORRED + "Invalid interval! " + COLOREND + "Message from plot_zeitlVerlaufPeaks().")
-                
-     
-            peakList_famA = peaksInOrder["FAM_A"]
-            peakList_famB = peaksInOrder["FAM_B"]
-            peakList_famC = peaksInOrder["FAM_C"]
+        plt.figure(figsize=(10, 5))
 
-            plt.figure(figsize=(10, 5))
-            plt.plot( blockList, peakList_famA, label="famA", color = "blue" )
-            plt.plot( blockList, peakList_famB, label="famB", color = "black" )
-            plt.plot( blockList, peakList_famC, label="famC", color = "orange" )
+        print(times)
 
-            title = "Evolution of peak hight (threeSpeakers)"
-            plt.legend(loc="upper left")
+        blockStarts = []
+        t = (times[0]-5)
+        while True:
+            blockStarts.append( t )
+            if( t >= times[-1]-5 ):
+                break
+            if( expType == "threeSpeakers"):
+                t += 120
+            elif( expType == "singleSpeaker"):
+                t += 150
 
-            for markerPosition in [ 23.0, 47.0 ]: #sHOW TRIAL BOUNDARIES
-                plt.axvline( markerPosition, color='grey', linestyle=':', alpha=0.8, linewidth=4.0, zorder=0 ) #linewidt must set 2x the actal value! e.g. 10 sec toal width -> linewidth=20.0
-            for markerPosition in range(0, 71+4, 4):
-                plt.axvline( float(markerPosition), color='grey', linestyle=':', alpha=0.8, linewidth=2.0, zorder=0 )
+        #for t in range( (times[0]-5), (times[-1]-5)+1, (120) ):
+        #    blockStarts.append( t )
 
-            plt.xticks(range(0, 71+4, 4), fontsize=tick_fontSize)
+        if( expType == "threeSpeakers" ): #CONVERT TO MINUTES
+            for i in range( len(blockStarts) ):
+                blockStarts[i] = int( float(blockStarts[i])/60.0 )
+            for k in range( len( times) ):
+                times[k] = float(times[k])/60.0 
 
-            #plt.xlim( 22, 29 ) ## close-up
+        plt.plot( times, peakList_famA, label="famA", color = "black" )
+        if( expType == "threeSpeakers" ):
+            plt.plot( times, peakList_famB, label="famB", color = "blue" )
+            plt.plot( times, peakList_famC, label="famC", color = "orange" )
 
-        #ax = plt.gca() # Access the current Axes object
-        #ax.yaxis.get_offset_text().set_fontsize(tick_fontSize) # Change font size of the offset text (scale factor)
+        plt.xticks(blockStarts, fontsize=tick_fontSize) 
+        plt.yticks(fontsize=tick_fontSize)
+
+        for blockStart in blockStarts:
+            plt.axvline( blockStart, color='grey', linestyle=':', alpha=0.8, linewidth=2.0, zorder=0 )
+
+
+
+        if( expType == "threeSpeakers" ):
+            title = f"Participant {pNr}"
+            plt.xlabel(f"\nt [min]{info}", fontsize=label_fontSize)
+        elif( expType == "singleSpeaker" ):
+            title = "Evolution of Peak Height (Single Speaker Experiment)"
+            plt.xlabel(f"\nt [sec]{info}", fontsize=label_fontSize)
+
+
         plt.title(f"\n{title}", fontsize=title_fontSize, fontweight='bold', pad=20)
-        plt.xlabel(f"Start of block nr.{info}", fontsize=label_fontSize)
-        plt.ylabel("Relative Peak Height", fontsize=label_fontSize) 
-        
+
+        plt.ylabel("Relative Peak Height\n", fontsize=label_fontSize) 
+
+        plt.legend(loc="upper left", fontsize=tick_fontSize)
+
+
+
         plt.tight_layout()
         plt.show()
         inp = input("any ")
-
 
 
 
@@ -196,7 +194,7 @@ class Auswertung:
         Plots.boxplot( 
             data          = data, 
             title         = f"Participant {pNr}",    ##
-            ylabel        = "Relative Peak Height", 
+            ylabel        = "\nRelative Peak Height", 
             xlabel        = f"\nPosition{info}", 
             axhline       = None
         )
